@@ -1,91 +1,58 @@
-# Teknik Bağlam: Structra Teknoloji Yığını ve Kurulum
+# Technical Context: Stack and Installation / Teknik Bağlam: Teknoloji Yığını ve Kurulum
 
-Structra, modern web ve mobil teknolojilerinin en verimli kombinasyonunu kullanarak hızlı geliştirme ve yüksek performans sunar.
+## 🌍 English Version
 
-## Teknoloji Yığını (Tech Stack)
+### Tech Stack
+- **Web/Backend**: Next.js 14 (App Router), TypeScript, TailwindCSS + shadcn/ui, PostgreSQL, Prisma, NextAuth.js v4, Socket.IO.
+- **Mobile**: React Native 0.74+, Expo SDK 51, React Navigation 6, AsyncStorage, NetInfo, Maps.
+- **Infrastructure**: Vercel (Web), Neon/Supabase (DB), Cloudinary (Images), Resend (Email).
 
-### 🌍 Web ve Backend
-- **Framework**: Next.js 14 (App Router)
-- **Dil**: TypeScript (Strict Mode)
-- **Stil**: TailwindCSS + shadcn/ui
-- **Veritabanı**: PostgreSQL
-- **ORM**: Prisma
-- **Kimlik Doğrulama**: NextAuth.js v4
-- **Real-time**: Socket.IO
-- **Raporlama**: jsPDF (PDF), xlsx (Excel), Recharts (Grafik)
-
-### 📱 Mobil
-- **Framework**: React Native 0.74+
-- **Toolchain**: Expo SDK 51
-- **Navigasyon**: React Navigation 6
-- **Depolama**: AsyncStorage
-- **İnternet Kontrolü**: @react-native-community/netinfo
-- **Harita**: react-native-maps
-
-### ☁️ DevOps ve Altyapı
-- **Deployment**: Vercel (Web & API)
-- **Veritabanı Host**: Neon / Supabase (PostgreSQL)
-- **Görsel Depolama**: Cloudinary / Yerel Disk (public/uploads)
-- **Email**: Resend (Email bildirimleri)
-
-## Proje Yapısı ve Bağımlılıklar
-
+### Project Structure
 ```
 Structra/
-├── src/                      # Ana uygulama (Next.js)
-│   ├── app/                  # Rotalar, sayfalar ve API'ler
-│   ├── components/           # UI ve işlevsel bileşenler
-│   ├── lib/                  # Veritabanı, auth ve utility'ler
-│   └── types/                # TypeScript tip tanımlamaları
-├── apps/
-│   └── mobile/               # Mobil uygulama (React Native)
-├── prisma/                   # DB şeması ve migration'lar
-├── public/                   # Statik dosyalar ve yüklenen fotoğraflar
-├── scripts/                  # Bakım ve otomasyon scriptleri
-└── memory-bank/              # Proje dokümantasyonu
+├── src/                      # Main App (Next.js)
+├── apps/mobile/              # Mobile App (React Native)
+├── prisma/                   # DB Schema & Migrations
+├── public/                   # Static Assets & Uploads
+└── memory-bank/              # Project Documentation
 ```
 
-## Kurulum ve Geliştirme
+### Installation
+1. `git clone https://github.com/thrhead/Structra.git`
+2. `npm install && cd apps/mobile && npm install`
+3. Create `.env` with `DATABASE_URL`, `NEXTAUTH_SECRET`, etc.
+4. `npx prisma db push && npx prisma db seed`
+5. `npm run dev` (Web) / `npx expo start` (Mobile)
 
-### Gereksinimler
-- Node.js 18.x veya 20.x
-- PostgreSQL (Lokal veya Bulut)
-- Git LFS (Büyük dosyalar için)
+---
 
-### Adım Adım Kurulum
+## 🇹🇷 Türkçe Versiyon
 
-1. **Repoyu Klonlayın**:
-   ```bash
-   git clone https://github.com/thrhead/Structra.git
-   cd Structra
-   ```
+### Teknoloji Yığını
+- **Web/Backend**: Next.js 14 (App Router), TypeScript, TailwindCSS + shadcn/ui, PostgreSQL, Prisma, NextAuth.js v4, Socket.IO.
+- **Mobil**: React Native 0.74+, Expo SDK 51, React Navigation 6, AsyncStorage, NetInfo, Haritalar.
+- **Altyapı**: Vercel (Web), Neon/Supabase (DB), Cloudinary (Görsel), Resend (E-posta).
 
-2. **Bağımlılıkları Kurun**:
-   ```bash
-   npm install
-   cd apps/mobile && npm install
-   ```
+### Proje Yapısı
+```
+Structra/
+├── src/                      # Ana Uygulama (Next.js)
+├── apps/mobile/              # Mobil Uygulama (React Native)
+├── prisma/                   # DB Şeması ve Migration'lar
+├── public/                   # Statik Dosyalar ve Yüklemeler
+└── memory-bank/              # Proje Dokümantasyonu
+```
 
-3. **Çalışma Ortamı (Env) Ayarları**:
-   Ana dizinde `.env` dosyası oluşturun:
-   ```env
-   DATABASE_URL="postgresql://user:pass@host:5432/db"
-   NEXTAUTH_SECRET="your-secret"
-   NEXTAUTH_URL="http://localhost:3000"
-   NEXT_PUBLIC_SOCKET_URL="http://localhost:3000"
-   ```
+### Kurulum
+1. `git clone https://github.com/thrhead/Structra.git`
+2. `npm install && cd apps/mobile && npm install`
+3. `DATABASE_URL`, `NEXTAUTH_SECRET` vb. ile `.env` dosyasını oluşturun.
+4. `npx prisma db push && npx prisma db seed`
+5. `npm run dev` (Web) / `npx expo start` (Mobil)
 
-4. **Veritabanı Hazırlığı**:
-   ```bash
-   npx prisma db push
-   npx prisma db seed
-   ```
+---
 
-5. **Uygulamaları Başlatın**:
-   - Web: `npm run dev`
-   - Mobil: `cd apps/mobile && npx expo start`
-
-## Performans Notları
-- **Image Optimization**: Görseller için `next/image` ve mobil tarafında `resizeMode` kullanılır.
-- **Bundle Size**: Web tarafında `next/dynamic` ile asenkron yükleme (code splitting) aktiftir.
-- **DB Indexing**: Sık kullanılan tüm FK alanları indekslenmiştir.
+## Performance Notes / Performans Notları
+- **Image Optimization**: `next/image` on Web and optimized `resizeMode` on Mobile.
+- **Bundle Size**: Code splitting with `next/dynamic`.
+- **DB Indexing**: All FK fields and common filter fields are indexed.
