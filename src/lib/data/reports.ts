@@ -41,7 +41,8 @@ const _getReportStats = unstable_cache(
 
         const pendingJobs = jobsByStatus.find(g => g.status === 'PENDING')?._count || 0;
         const inProgressJobs = jobsByStatus.find(g => g.status === 'IN_PROGRESS')?._count || 0;
-        const completedJobs = jobsByStatus.find(g => g.status === 'COMPLETED')?._count || 0;
+        const completedJobs = (jobsByStatus.find(g => g.status === 'COMPLETED')?._count || 0) + 
+                              (jobsByStatus.find(g => g.status === 'ACCEPTED')?._count || 0);
         const totalJobs = pendingJobs + inProgressJobs + completedJobs;
 
         const costWhere: any = {

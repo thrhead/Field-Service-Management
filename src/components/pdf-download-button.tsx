@@ -23,7 +23,8 @@ export function PDFDownloadButton({
 }: PDFDownloadButtonProps) {
     const [isGenerating, setIsGenerating] = useState(false)
 
-    const handleDownload = async () => {
+    const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
         try {
             setIsGenerating(true)
 
