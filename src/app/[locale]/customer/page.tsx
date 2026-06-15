@@ -20,6 +20,7 @@ import { Link } from '@/lib/navigation'
 import { getTranslations } from 'next-intl/server'
 import { formatDistanceToNow } from 'date-fns'
 import { tr, enUS } from 'date-fns/locale'
+import { DownloadButtonWrapper } from '@/components/customer/download-button-wrapper'
 
 async function getCustomerDashboardData(userId: string) {
   const { prisma } = await import('@/lib/db')
@@ -214,20 +215,21 @@ export default async function CustomerDashboard(props: { params: Promise<{ local
                         </div>
                         <div className="mt-4 flex justify-between items-center">
                           <span className="text-[10px] text-gray-400 font-medium">{job.jobNo}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 text-[10px] font-bold text-blue-600 p-0 hover:bg-transparent"
-                            asChild
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <a href={`/api/v1/jobs/${job.id}/report`} download onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center">
-                                <DownloadIcon className="w-3.5 h-3.5 mr-1" />
-                                RAPOR İNDİR (PDF)
-                              </div>
-                            </a>
-                          </Button>
+                          <DownloadButtonWrapper>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-[10px] font-bold text-blue-600 p-0 hover:bg-transparent"
+                              asChild
+                            >
+                              <a href={`/api/v1/jobs/${job.id}/report`} download>
+                                <div className="flex items-center">
+                                  <DownloadIcon className="w-3.5 h-3.5 mr-1" />
+                                  RAPOR İNDİR (PDF)
+                                </div>
+                              </a>
+                            </Button>
+                          </DownloadButtonWrapper>
                         </div>
                       </div>
                     </Link>
