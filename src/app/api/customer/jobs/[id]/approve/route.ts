@@ -37,12 +37,9 @@ export async function POST(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 })
     }
 
+    // A job is approvable by customer if it's COMPLETED (already approved by admin)
     if (job.status !== 'COMPLETED') {
-      return NextResponse.json({ error: 'Only completed jobs can be approved' }, { status: 400 })
-    }
-
-    if (job.acceptanceStatus !== 'ACCEPTED') {
-      return NextResponse.json({ error: 'Job must be approved by admin before customer approval' }, { status: 400 })
+      return NextResponse.json({ error: 'Bu iş henüz onaylanmaya hazır değil.' }, { status: 400 })
     }
 
     // Start transaction to update job and create approval record
@@ -51,7 +48,7 @@ export async function POST(
       const updated = await tx.job.update({
         where: { id },
         data: {
-          status: 'ACCEPTED', // Or whatever status signifies finalized by customer
+          status: 'ACCEPTED', // Customer final approval
           acceptanceStatus: 'ACCEPTED'
         }
       })

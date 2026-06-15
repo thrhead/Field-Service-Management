@@ -92,7 +92,8 @@ interface JobDetail {
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'Bekliyor',
   IN_PROGRESS: 'Devam Ediyor',
-  COMPLETED: 'Onay Bekliyor',
+  PENDING_APPROVAL: 'Yönetici Onayı Bekliyor',
+  COMPLETED: 'Müşteri Onayı Bekliyor',
   ACCEPTED: 'Kabul Edildi',
   REJECTED: 'Reddedildi',
   ON_HOLD: 'Beklemede',
@@ -102,7 +103,8 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_COLORS: Record<string, string> = {
   PENDING: 'bg-gray-100 text-gray-800',
   IN_PROGRESS: 'bg-yellow-100 text-yellow-800',
-  COMPLETED: 'bg-blue-100 text-blue-800',
+  PENDING_APPROVAL: 'bg-orange-100 text-orange-800',
+  COMPLETED: 'bg-indigo-100 text-indigo-800',
   ACCEPTED: 'bg-emerald-100 text-emerald-800',
   REJECTED: 'bg-red-100 text-red-800',
   ON_HOLD: 'bg-orange-100 text-orange-800',
@@ -135,7 +137,7 @@ export default function CustomerJobDetailPage({ params }: { params: { id: string
     const fetchJob = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/customer/jobs/${jobId}`)
+        const response = await fetch(`/api/customer/jobs/${jobId}`, { cache: 'no-store' })
         if (response.ok) {
           const data = await response.json()
           setJob(data)
@@ -164,7 +166,7 @@ export default function CustomerJobDetailPage({ params }: { params: { id: string
       if (response.ok) {
         toast.success('İş başarıyla onaylandı.')
         const fetchJob = async () => {
-          const res = await fetch(`/api/customer/jobs/${jobId}`)
+          const res = await fetch(`/api/customer/jobs/${jobId}`, { cache: 'no-store' })
           if (res.ok) {
             setJob(await res.json())
           }
@@ -200,7 +202,7 @@ export default function CustomerJobDetailPage({ params }: { params: { id: string
         toast.success('İş reddedildi ve ekibe geri yönlendirildi.')
         setRejectDialogOpen(false)
         const fetchJob = async () => {
-          const res = await fetch(`/api/customer/jobs/${jobId}`)
+          const res = await fetch(`/api/customer/jobs/${jobId}`, { cache: 'no-store' })
           if (res.ok) {
             setJob(await res.json())
           }
@@ -256,23 +258,23 @@ export default function CustomerJobDetailPage({ params }: { params: { id: string
       </div>
 
       {/* Customer Action Card (Approval) */}
-      {job.status === 'COMPLETED' && (
+      {(job.status === 'COMPLETED' || job.status === 'PENDING_APPROVAL') && (
         <Card className="border-indigo-200 bg-indigo-50">
           <CardHeader>
             <CardTitle className="text-base text-indigo-900 flex items-center gap-2">
               <AlertCircleIcon className="h-5 w-5" />
-              {job.acceptanceStatus === 'ACCEPTED' ? 'İş Tamamlandı - Onayınız Bekleniyor' : 'İş Tamamlandı - Yönetici Onayı Bekleniyor'}
+              {job.status === 'COMPLETED' ? 'İş Tamamlandı - Onayınız Bekleniyor' : 'İş Tamamlandı - Yönetici Onayı Bekleniyor'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {job.acceptanceStatus === 'ACCEPTED' ? (
+            {job.status === 'COMPLETED' ? (
               <>
                 <p className="text-sm text-indigo-800">
                   Bu montaj işi ekibimiz tarafından tamamlandı olarak işaretlenmiştir. Lütfen yapılan işi kontrol ederek onaylayın veya bir eksiklik varsa reddederek ekibe geri bildirimde bulunun.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Button 
-                    onClick={handleApprove} 
+                    onClick={() => setApproveConfirmOpen(true)} 
                     disabled={actionLoading}
                     className="bg-green-600 hover:bg-green-700 text-white gap-2"
                   >

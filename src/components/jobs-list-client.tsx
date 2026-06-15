@@ -44,9 +44,10 @@ export function JobsListClient({ initialJobs, teams, customers }: JobsListClient
     const [loading, setLoading] = useState(false)
 
     const statusConfig: Record<string, { label: string; color: string }> = {
-        'PENDING': { label: 'Beklemede', color: 'bg-yellow-100 text-yellow-800' },
-        'IN_PROGRESS': { label: 'Devam Ediyor', color: 'bg-blue-100 text-blue-800' },
-        'COMPLETED': { label: 'Onay Bekliyor', color: 'bg-green-100 text-green-800' },
+        'PENDING': { label: 'Beklemede', color: 'bg-gray-100 text-gray-800' },
+        'IN_PROGRESS': { label: 'Devam Ediyor', color: 'bg-yellow-100 text-yellow-800' },
+        'PENDING_APPROVAL': { label: 'Yönetici Onayı Bekliyor', color: 'bg-orange-100 text-orange-800' },
+        'COMPLETED': { label: 'Müşteri Onayı Bekliyor', color: 'bg-indigo-100 text-indigo-800' },
         'ACCEPTED': { label: 'Kabul Edildi', color: 'bg-emerald-100 text-emerald-800' },
         'ON_HOLD': { label: 'Beklemede', color: 'bg-orange-100 text-orange-800' }
     }
@@ -103,14 +104,8 @@ export function JobsListClient({ initialJobs, teams, customers }: JobsListClient
                                     <CardHeader className="pb-3">
                                         <div className="flex justify-between items-start">
                                             <CardTitle className="text-lg">{job.title}</CardTitle>
-                                            <Badge className={
-                                                job.status === 'COMPLETED' && job.acceptanceStatus === 'ACCEPTED'
-                                                    ? 'bg-indigo-100 text-indigo-800'
-                                                    : statusConfig[job.status]?.color || ''
-                                            }>
-                                                {job.status === 'COMPLETED' && job.acceptanceStatus === 'ACCEPTED'
-                                                    ? 'Müşteri Onayı Bekliyor'
-                                                    : statusConfig[job.status]?.label || job.status}
+                                            <Badge className={statusConfig[job.status]?.color || ''}>
+                                                {statusConfig[job.status]?.label || job.status}
                                             </Badge>
                                         </div>
                                     </CardHeader>
