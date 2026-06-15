@@ -12,7 +12,7 @@ export async function GET(req: Request) {
         // Instead of reading the physical file system (which crashes on Vercel),
         // we fetch logic for finished jobs so they can be exported dynamically from the UI.
         const jobs = await prisma.job.findMany({
-            where: { status: 'COMPLETED' },
+            where: { status: { in: ['COMPLETED', 'ACCEPTED'] } },
             orderBy: { completedDate: 'desc' },
             select: { id: true, title: true, jobNo: true, completedDate: true, customer: { select: { company: true } } }
         });
