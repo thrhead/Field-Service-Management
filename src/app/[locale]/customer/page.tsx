@@ -219,8 +219,9 @@ export default async function CustomerDashboard(props: { params: Promise<{ local
                             size="sm"
                             className="h-8 text-[10px] font-bold text-blue-600 p-0 hover:bg-transparent"
                             asChild
+                            onClick={(e) => e.stopPropagation()}
                           >
-                            <a href={`/api/v1/jobs/${job.id}/report`} download>
+                            <a href={`/api/v1/jobs/${job.id}/report`} download onClick={(e) => e.stopPropagation()}>
                               <div className="flex items-center">
                                 <DownloadIcon className="w-3.5 h-3.5 mr-1" />
                                 RAPOR İNDİR (PDF)
