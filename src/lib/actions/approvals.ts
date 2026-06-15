@@ -54,13 +54,17 @@ export async function processApprovalAction(data: z.infer<typeof approvalActionS
                         where: { id: approval.jobId },
                         data: { 
                             status: 'COMPLETED',
+                            acceptanceStatus: 'ACCEPTED',
                             completedDate: new Date() // Final confirmation date
                         }
                     })
                 } else if (status === 'REJECTED') {
                     await tx.job.update({
                         where: { id: approval.jobId },
-                        data: { status: 'IN_PROGRESS' } // Send back to worker
+                        data: { 
+                            status: 'IN_PROGRESS',
+                            acceptanceStatus: 'REJECTED'
+                        } // Send back to worker
                     })
                 }
             }

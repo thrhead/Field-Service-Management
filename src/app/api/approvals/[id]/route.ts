@@ -54,20 +54,33 @@ export async function PATCH(
 
     // Update job status based on approval decision
     if (status === 'APPROVED') {
+      const jobData: any = {
+        status: 'COMPLETED',
+        completedDate: new Date()
+      }
+
+      // If it's a job completion approval, also set acceptance status for customer
+      if (approval.type === 'JOB_COMPLETION') {
+        jobData.acceptanceStatus = 'ACCEPTED'
+      }
+
       await prisma.job.update({
         where: { id: approval.jobId },
-        data: {
-          status: 'COMPLETED',
-          completedDate: new Date()
-        }
+        data: jobData
       })
 
       // Notify requester
       await notifyApprovalApproved(approval.jobId, approval.requesterId)
     } else if (status === 'REJECTED') {
+      const jobData: any = { status: 'IN_PROGRESS' }
+      
+      if (approval.type === 'JOB_COMPLETION') {
+        jobData.acceptanceStatus = 'REJECTED'
+      }
+
       await prisma.job.update({
         where: { id: approval.jobId },
-        data: { status: 'IN_PROGRESS' }
+        data: jobData
       })
 
       // Notify requester

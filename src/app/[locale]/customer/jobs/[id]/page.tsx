@@ -41,6 +41,7 @@ interface JobDetail {
   title: string
   description: string | null
   status: string
+  acceptanceStatus: string
   priority: string
   location: string | null
   scheduledDate: string | null
@@ -260,32 +261,40 @@ export default function CustomerJobDetailPage({ params }: { params: { id: string
           <CardHeader>
             <CardTitle className="text-base text-indigo-900 flex items-center gap-2">
               <AlertCircleIcon className="h-5 w-5" />
-              İş Tamamlandı - Onayınız Bekleniyor
+              {job.acceptanceStatus === 'ACCEPTED' ? 'İş Tamamlandı - Onayınız Bekleniyor' : 'İş Tamamlandı - Yönetici Onayı Bekleniyor'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-indigo-800">
-              Bu montaj işi ekibimiz tarafından tamamlandı olarak işaretlenmiştir. Lütfen yapılan işi kontrol ederek onaylayın veya bir eksiklik varsa reddederek ekibe geri bildirimde bulunun.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button 
-                onClick={handleApprove} 
-                disabled={actionLoading}
-                className="bg-green-600 hover:bg-green-700 text-white gap-2"
-              >
-                {actionLoading ? <CustomSpinner className="h-4 w-4 animate-spin" /> : <ThumbsUpIcon className="h-4 w-4" />}
-                İşi Onayla
-              </Button>
-              <Button 
-                onClick={() => setRejectDialogOpen(true)} 
-                disabled={actionLoading}
-                variant="destructive"
-                className="gap-2"
-              >
-                <ThumbsDownIcon className="h-4 w-4" />
-                Reddet ve Not Ekle
-              </Button>
-            </div>
+            {job.acceptanceStatus === 'ACCEPTED' ? (
+              <>
+                <p className="text-sm text-indigo-800">
+                  Bu montaj işi ekibimiz tarafından tamamlandı olarak işaretlenmiştir. Lütfen yapılan işi kontrol ederek onaylayın veya bir eksiklik varsa reddederek ekibe geri bildirimde bulunun.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Button 
+                    onClick={handleApprove} 
+                    disabled={actionLoading}
+                    className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                  >
+                    {actionLoading ? <CustomSpinner className="h-4 w-4 animate-spin" /> : <ThumbsUpIcon className="h-4 w-4" />}
+                    İşi Onayla
+                  </Button>
+                  <Button 
+                    onClick={() => setRejectDialogOpen(true)} 
+                    disabled={actionLoading}
+                    variant="destructive"
+                    className="gap-2"
+                  >
+                    <ThumbsDownIcon className="h-4 w-4" />
+                    Reddet ve Not Ekle
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-indigo-800">
+                Bu iş saha ekibi tarafından tamamlandı olarak işaretlenmiştir. Şu anda yöneticilerimiz tarafından kontrol edilmektedir. Yönetici onayından sonra sizin onayınıza sunulacaktır.
+              </p>
+            )}
           </CardContent>
         </Card>
       )}
