@@ -77,9 +77,10 @@ const JobCard = ({ job, onPress, style }) => {
 
             <View style={styles.progressContainer}>
                 <View style={[styles.progressBarBg, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]}>
-                    <View style={[styles.progressBarFill, { width: `${job.progress || 0}%`, backgroundColor: theme.colors.primary }]} />
-                </View>
-                <Text style={[styles.progressText, { color: theme.colors.text }]}>{job.progress || 0}%</Text>
+                    <View style={[styles.progressBarFill, { width: `${progress || 0}%`, backgroundColor: theme.colors.primary }]} />
+                    </View>
+                    <Text style={[styles.progressText, { color: theme.colors.text }]}>{progress || 0}%</Text>
+
             </View>
         </TouchableOpacity>
     );
@@ -142,6 +143,21 @@ const styles = StyleSheet.create({
     },
     progressBarBg: {
         flex: 1,
+        height: 6,
+        borderRadius: 3,
+    },
+    progressBarFill: {
+        height: '100%',
+        borderRadius: 3,
+    },
+    progressText: {
+        fontSize: 12,
+        fontWeight: '600',
+    },
+});
+
+export default JobCard;
+lex: 1,
         height: 6,
         borderRadius: 3,
     },

@@ -11,7 +11,9 @@ export const JobSummaryMetrics = ({ metrics, theme }) => {
             <View style={styles.separator} />
             <View style={styles.metric}>
                 <Text style={[styles.label, { color: theme.colors.subText }]}>İlerleme</Text>
-                <Text style={[styles.value, { color: theme.colors.primary }]}>{metrics.progress}%</Text>
+                <Text style={[styles.value, { color: theme.colors.primary }]}>
+                    {metrics.progress}% ({metrics.completedSteps}/{metrics.totalSteps})
+                </Text>
             </View>
             <View style={styles.separator} />
             <View style={styles.metric}>
