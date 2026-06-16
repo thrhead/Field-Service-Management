@@ -1,42 +1,24 @@
 import React from 'react';
-import { useTheme } from '../../../context/ThemeContext';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../../../constants/theme';
 
-export const ExpenseSummary = ({ totalAmount, theme }) => {
+export const ExpenseSummary = ({ totalAmount, pendingCount, approvedCount, theme }) => {
     return (
-        <View style={[styles.budgetCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-            <View style={styles.budgetHeader}>
-                <Text style={[styles.budgetTitle, { color: theme.colors.text }]}>Toplam Harcama</Text>
-                <Text style={[styles.budgetAmount, { color: theme.colors.text }]}>
-                    ₺{totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </Text>
+        <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
+            <View style={styles.metric}>
+                <Text style={[styles.label, { color: theme.colors.subText }]}>Toplam</Text>
+                <Text style={[styles.value, { color: theme.colors.text }]}>₺{totalAmount}</Text>
+            </View>
+            <View style={styles.metric}>
+                <Text style={[styles.label, { color: theme.colors.subText }]}>Onay Bekleyen</Text>
+                <Text style={[styles.value, { color: theme.colors.warning }]}>{pendingCount}</Text>
             </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    budgetCard: {
-        margin: 16,
-        marginTop: 0,
-        padding: 20,
-        borderRadius: 12,
-        borderWidth: 1,
-    },
-    budgetHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    budgetTitle: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: COLORS.textLight,
-    },
-    budgetAmount: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: COLORS.textLight,
-    },
+    container: { flexDirection: 'row', padding: 16, borderRadius: 12, marginBottom: 16, justifyContent: 'space-around' },
+    metric: { alignItems: 'center' },
+    label: { fontSize: 12 },
+    value: { fontSize: 18, fontWeight: 'bold' }
 });

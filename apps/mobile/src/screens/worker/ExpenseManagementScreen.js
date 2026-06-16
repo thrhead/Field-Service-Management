@@ -59,6 +59,8 @@ export default function ExpenseManagementScreen({ navigation, route }) {
     };
 
     const totalAmount = filteredExpenses.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    const pendingCount = filteredExpenses.filter(e => e.status === 'PENDING').length;
+    const approvedCount = filteredExpenses.filter(e => e.status === 'APPROVED').length;
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -85,7 +87,12 @@ export default function ExpenseManagementScreen({ navigation, route }) {
                 />
 
                 {/* Budget Card */}
-                <ExpenseSummary totalAmount={totalAmount} theme={theme} />
+                <ExpenseSummary 
+                    totalAmount={totalAmount} 
+                    pendingCount={pendingCount} 
+                    approvedCount={approvedCount} 
+                    theme={theme} 
+                />
 
                 {/* Search */}
                 <View style={styles.searchContainer}>
