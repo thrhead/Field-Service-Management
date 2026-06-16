@@ -63,7 +63,7 @@ export const useCostManagement = () => {
             filtered = filtered.filter(c => c.createdById === selectedUserId);
         }
 
-        // Date Filter
+        // Date Filter (Optional)
         if (startDate && endDate) {
             const start = new Date(startDate);
             start.setHours(0, 0, 0, 0);

@@ -54,6 +54,13 @@ const DateFilter = ({ startDate, endDate, onStartDateChange, onEndDateChange, th
                 </TouchableOpacity>
             </View>
 
+            <TouchableOpacity 
+                style={[styles.clearButton, { borderColor: colors.border }]}
+                onPress={() => { onStartDateChange(null); onEndDateChange(null); }}
+            >
+                <MaterialIcons name="close" size={20} color={colors.error} />
+            </TouchableOpacity>
+
             {showStart && (
                 <DateTimePicker
                     value={startDate || new Date()}
@@ -102,6 +109,14 @@ const styles = StyleSheet.create({
     },
     dateText: {
         fontSize: 14,
+    },
+    clearButton: {
+        padding: 10,
+        borderRadius: 8,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
     },
 });
 
