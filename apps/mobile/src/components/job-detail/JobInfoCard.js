@@ -90,14 +90,14 @@ const JobInfoCard = ({ job }) => {
             { alignItems: "center", justifyContent: "center" },
           ]}
         >
-          <Text
-            style={{
-              fontSize: size * 0.22,
-              fontWeight: "bold",
-              color: theme.colors.text,
-            }}
-          >
-            {Math.round(progress)}%
+          <Text style={{ textAlign: "center", color: theme.colors.text }}>
+            <Text style={{ fontSize: size * 0.2, fontWeight: "bold" }}>
+              {Math.round(progress)}%
+            </Text>
+            {"\n"}
+            <Text style={{ fontSize: size * 0.14 }}>
+              {completedSteps}/{totalSteps}
+            </Text>
           </Text>
         </View>
       </View>

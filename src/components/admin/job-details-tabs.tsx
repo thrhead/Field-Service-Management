@@ -64,6 +64,33 @@ export function AdminJobDetailsTabs({ job, workers, teams }: AdminJobDetailsTabs
     const [longitude, setLongitude] = useState(job.longitude?.toString() || '')
     const [saving, setSaving] = useState(false)
 
+    const getMetrics = () => {
+        if (job.metrics) return job.metrics;
+        
+        const statusMap: Record<string, string> = {
+            'PENDING': 'Bekliyor',
+            'IN_PROGRESS': 'Devam Ediyor',
+            'COMPLETED': 'Tamamlandı',
+            'PENDING_APPROVAL': 'Onay Bekliyor',
+        };
+        const status = statusMap[job.status] || job.status || 'Bekliyor';
+
+        let totalTime = '0dk';
+        if (job.startedAt && job.completedDate) {
+            const start = new Date(job.startedAt).getTime();
+            const end = new Date(job.completedDate).getTime();
+            const diffInMinutes = Math.floor((end - start) / (1000 * 60));
+            totalTime = `${diffInMinutes}dk`;
+        } else if (job.startedAt) {
+            const start = new Date(job.startedAt).getTime();
+            const now = new Date().getTime();
+            const diffInMinutes = Math.floor((now - start) / (1000 * 60));
+            totalTime = `${diffInMinutes}dk`;
+        }
+        
+        return { totalTime, status };
+    };
+
     const handleSaveCoordinates = async () => {
         const lat = parseFloat(latitude)
         const lng = parseFloat(longitude)
@@ -123,7 +150,7 @@ export function AdminJobDetailsTabs({ job, workers, teams }: AdminJobDetailsTabs
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-6">
-                    <JobSummaryMetrics metrics={job.metrics || { totalTime: '0dk', status: 'Bekliyor' }} />
+                    <JobSummaryMetrics metrics={getMetrics()} />
                     <JobEditView job={job} workers={workers} teams={teams} />
                 </TabsContent>
 
@@ -225,7 +252,7 @@ export function AdminJobDetailsTabs({ job, workers, teams }: AdminJobDetailsTabs
 
                 <TabsContent value="details" className="space-y-6">
                     <div className="grid gap-6 md:grid-cols-2">
-                        <JobSummaryMetrics metrics={job.metrics || { totalTime: '0dk', status: 'Bekliyor' }} />
+                        <JobSummaryMetrics metrics={getMetrics()} />
                         <Card>
                            <CardHeader><CardTitle className="text-base">Onay Geçmişi</CardTitle></CardHeader>
                            <CardContent><ApprovalTimeline history={job.approvalHistory || []} /></CardContent>
