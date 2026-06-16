@@ -15,6 +15,7 @@ import { PDFDownloadButton } from '@/components/pdf-download-button'
 import { ExcelDownloadButton } from '@/components/excel-download-button'
 import { ProformaDownloadButton } from '@/components/proforma-download-button'
 import { JobSummaryMetrics } from '@/components/job-detail/JobSummaryMetrics'
+import { ApprovalTimeline } from '@/components/job-detail/ApprovalTimeline'
 
 // Dynamic imports to avoid SSR issues and React hydration errors
 const JobLocationMap = dynamic(
