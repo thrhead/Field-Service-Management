@@ -26,7 +26,7 @@ const jobService = {
     },
 
     getJobById: async (jobId) => {
-        const response = await api.get(`/api/worker/jobs/${jobId}`);
+        const response = await api.get(`/api/worker/jobs/${jobId}?include=audit`);
         return response.data;
     },
 
