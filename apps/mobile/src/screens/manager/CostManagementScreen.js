@@ -9,6 +9,7 @@ import CategoryFilter from '../../components/manager/CategoryFilter';
 import ExpenseList from '../../components/manager/ExpenseList';
 import DateFilter from '../../components/manager/DateFilter';
 import UserFilter from '../../components/manager/UserFilter';
+import { ExpenseSummary } from '../../components/worker/expense/ExpenseSummary';
 import { useAlert } from '../../context/AlertContext';
 
 import CustomSpinner from '../../components/CustomSpinner';
@@ -36,6 +37,10 @@ export default function CostManagementScreen({ navigation }) {
         setSelectedCategory,
         onRefresh
     } = useCostManagement();
+
+    const totalAmount = filteredCosts.reduce((sum, cost) => sum + parseFloat(cost.amount || 0), 0).toFixed(2);
+    const pendingCount = filteredCosts.filter(cost => cost.status === 'PENDING').length;
+    const approvedCount = filteredCosts.filter(cost => cost.status === 'APPROVED').length;
 
     if (loading) {
         return (
@@ -71,6 +76,13 @@ export default function CostManagementScreen({ navigation }) {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />
                 }
             >
+                <ExpenseSummary 
+                    totalAmount={totalAmount}
+                    pendingCount={pendingCount}
+                    approvedCount={approvedCount}
+                    theme={theme}
+                />
+
                 <ProjectFilter
                     jobs={jobs}
                     selectedJob={selectedJob}
