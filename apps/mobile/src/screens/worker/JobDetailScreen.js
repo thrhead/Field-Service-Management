@@ -43,6 +43,8 @@ import SubStepItem from '../../components/job-detail/SubStepItem';
 import JobActionFooter from '../../components/job-detail/JobActionFooter';
 import JobDetailModals from '../../components/job-detail/JobDetailModals';
 import LoadingOverlay from '../../components/common/LoadingOverlay';
+import { ApprovalTimeline } from '../../components/job-detail/ApprovalTimeline';
+import { JobSummaryMetrics } from '../../components/job-detail/JobSummaryMetrics';
 
 import CustomSpinner from '../../components/CustomSpinner';
 export default function JobDetailScreen({ route, navigation }) {
@@ -830,6 +832,9 @@ export default function JobDetailScreen({ route, navigation }) {
                         )}
 
                         <JobInfoCard job={job} />
+
+                        <JobSummaryMetrics metrics={job.metrics || {}} theme={theme} />
+                        <ApprovalTimeline history={job.approvalHistory || []} theme={theme} />
 
                         <CostSection
                             job={job}
