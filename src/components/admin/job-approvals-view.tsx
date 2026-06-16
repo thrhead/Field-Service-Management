@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import Image from 'next/image'
+import { ApprovalTimeline } from '@/components/job-detail/ApprovalTimeline'
 
 interface JobApprovalsViewProps {
     job: any

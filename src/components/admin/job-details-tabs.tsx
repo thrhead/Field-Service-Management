@@ -14,6 +14,7 @@ import { MapPin, Save, UserCog } from 'lucide-react'
 import { PDFDownloadButton } from '@/components/pdf-download-button'
 import { ExcelDownloadButton } from '@/components/excel-download-button'
 import { ProformaDownloadButton } from '@/components/proforma-download-button'
+import { JobSummaryMetrics } from '@/components/job-detail/JobSummaryMetrics'
 
 // Dynamic imports to avoid SSR issues and React hydration errors
 const JobLocationMap = dynamic(
@@ -121,6 +122,7 @@ export function AdminJobDetailsTabs({ job, workers, teams }: AdminJobDetailsTabs
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-6">
+                    <JobSummaryMetrics metrics={job.metrics || { totalTime: '0dk', status: 'Bekliyor' }} />
                     <JobEditView job={job} workers={workers} teams={teams} />
                 </TabsContent>
 
@@ -221,6 +223,13 @@ export function AdminJobDetailsTabs({ job, workers, teams }: AdminJobDetailsTabs
                 </TabsContent>
 
                 <TabsContent value="details" className="space-y-6">
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <JobSummaryMetrics metrics={job.metrics || { totalTime: '0dk', status: 'Bekliyor' }} />
+                        <Card>
+                           <CardHeader><CardTitle className="text-base">Onay Geçmişi</CardTitle></CardHeader>
+                           <CardContent><ApprovalTimeline history={job.approvalHistory || []} /></CardContent>
+                        </Card>
+                    </div>
                     <div className="grid gap-6 md:grid-cols-2">
                         <Card>
                             <CardHeader>
