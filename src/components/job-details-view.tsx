@@ -11,6 +11,10 @@ import { Progress } from "@/components/ui/progress"
 import { formatTaskNumber } from "@/lib/utils/job-number"
 import Image from "next/image"
 
+// Components
+import { ApprovalTimeline } from "@/components/job-detail/ApprovalTimeline"
+import { JobSummaryMetrics } from "@/components/job-detail/JobSummaryMetrics"
+
 interface JobDetailsProps {
     job: {
         id: string
@@ -23,6 +27,8 @@ interface JobDetailsProps {
         budget: number | null
         estimatedDuration: number | null
         createdAt: Date
+        metrics?: { totalTime: string; status: string }
+        approvalHistory?: any[]
         jobLead?: {
             id: string
             name: string | null
@@ -215,65 +221,22 @@ export function JobDetailsView({ job }: JobDetailsProps) {
                                 </div>
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
+            </div>
 
-                        <div>
-                            <h3 className="text-sm font-medium text-gray-500 mb-2">Atanan Ekip / Personel</h3>
-                            {job.assignments.length > 0 ? (
-                                <div className="space-y-4">
-                                    {job.assignments.map((assignment, index) => (
-                                        <div key={index} className="space-y-3">
-                                            {assignment.team ? (
-                                                <>
-                                                    <div className="flex items-center gap-3 p-2 bg-indigo-50/50 rounded border border-indigo-100 text-sm">
-                                                        <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
-                                                        <span className="text-indigo-900">Ekip: <strong>{assignment.team.name}</strong></span>
-                                                    </div>
-                                                    
-                                                    {/* Ekip Lideri Gösterimi */}
-                                                    {assignment.team.lead && (
-                                                        <div className="ml-4 space-y-1">
-                                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ekip Lideri</p>
-                                                            <div className="flex items-center gap-2 text-sm text-gray-700 bg-amber-50 p-2 rounded border border-amber-100">
-                                                                <User className="h-4 w-4 text-amber-600" />
-                                                                <span className="font-semibold">{assignment.team.lead.name}</span>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Diğer Çalışanlar Gösterimi */}
-                                                    {assignment.team.members && assignment.team.members.length > 0 && (
-                                                        <div className="ml-4 space-y-1">
-                                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ekip Üyeleri</p>
-                                                            <div className="grid grid-cols-1 gap-1">
-                                                                {assignment.team.members
-                                                                    .filter(m => m.user.id !== job.jobLead?.id)
-                                                                    .map((member, mIdx) => (
-                                                                        <div key={mIdx} className="flex items-center gap-2 text-sm text-gray-600 bg-white p-1.5 rounded border border-gray-100 shadow-sm">
-                                                                            <User className="h-3.5 w-3.5 text-gray-400" />
-                                                                            <span>{member.user.name}</span>
-                                                                        </div>
-                                                                    ))
-                                                                }
-                                                                {assignment.team.members.filter(m => m.user.id !== job.jobLead?.id).length === 0 && (
-                                                                    <p className="text-xs text-gray-400 italic">Başka üye bulunmuyor.</p>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            ) : (
-                                                <div className="flex items-center gap-3 p-2 bg-blue-50/50 rounded border border-blue-100 text-sm">
-                                                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                                                    <span className="text-blue-900">Personel: <strong>{assignment.worker?.name}</strong></span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-sm text-gray-500 italic">Henüz atama yapılmamış</p>
-                            )}
-                        </div>
+            {/* Metrics and Approval */}
+            <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                    <CardHeader><CardTitle>Özet Metrikler</CardTitle></CardHeader>
+                    <CardContent>
+                        <JobSummaryMetrics metrics={job.metrics || { totalTime: '0dk', status: 'Bekliyor' }} />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader><CardTitle>Onay Akışı</CardTitle></CardHeader>
+                    <CardContent>
+                        <ApprovalTimeline history={job.approvalHistory || []} />
                     </CardContent>
                 </Card>
             </div>
