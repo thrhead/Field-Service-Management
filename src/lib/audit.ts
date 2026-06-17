@@ -148,7 +148,7 @@ export async function logAudit(
                 level: 'AUDIT',
                 message: message,
                 userId: userId,
-                meta: details as any, // Json in Prisma
+                meta: { ...details, action } as any, // Json in Prisma
                 platform: details.platform || platform, 
                 createdAt: new Date(),
             },

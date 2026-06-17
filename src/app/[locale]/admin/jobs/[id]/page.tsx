@@ -47,8 +47,7 @@ export default async function AdminJobDetailsPage(props: {
         }),
         prisma.systemLog.findMany({
             where: { 
-                level: 'AUDIT',
-                meta: { path: ['jobId'], equals: params.id }
+                level: 'AUDIT'
             },
             orderBy: { createdAt: 'desc' }
         })
@@ -88,9 +87,11 @@ export default async function AdminJobDetailsPage(props: {
     const pendingApproval = rawPendingApproval ? JSON.parse(JSON.stringify(rawPendingApproval)) : null
     
     // Add audit logs to job object
+    const auditLogsForJob = auditLogs.filter(log => (log.meta as any)?.jobId === params.id)
+    
     const jobWithLogs = {
         ...JSON.parse(JSON.stringify(job)),
-        auditLogs: auditLogs.map(log => ({
+        auditLogs: auditLogsForJob.map(log => ({
             id: log.id,
             title: log.message,
             userName: (log.meta as any)?.userName || 'Sistem',
