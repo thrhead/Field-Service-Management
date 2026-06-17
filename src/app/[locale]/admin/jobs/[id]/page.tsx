@@ -88,9 +88,12 @@ export default async function AdminJobDetailsPage(props: {
     
     // Add audit logs to job object
     console.log('AUDIT LOGS DUMP:', JSON.stringify(auditLogs, null, 2));
-    
-    const auditLogsForJob = auditLogs.filter(log => (log.meta as any)?.jobId === params.id)
-    
+    // Add audit logs to job object
+    const auditLogsForJob = auditLogs.filter(log => {
+        const meta = log.meta as any;
+        return meta?.jobId === params.id || (meta?.resourceId === params.id && meta?.action?.startsWith('JOB_'));
+    });
+
     const jobWithLogs = {
         ...JSON.parse(JSON.stringify(job)),
         auditLogs: auditLogsForJob.map(log => ({
@@ -102,6 +105,7 @@ export default async function AdminJobDetailsPage(props: {
             meta: log.meta // Meta bilgisini bileşene aktarıyoruz ki parse edilsin
         }))
     }
+
 
     return (
         <div className="space-y-6">
