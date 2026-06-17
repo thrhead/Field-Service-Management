@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
+import { logAudit, AuditAction } from '@/lib/audit'
 
 export async function POST(
   req: Request,
@@ -66,6 +67,12 @@ export async function POST(
       })
 
       return updated
+    })
+
+    await logAudit(session.user.id, AuditAction.JOB_CUSTOMER_ACCEPT, {
+      jobId: id,
+      title: job.title,
+      userName: session.user.name || 'Müşteri'
     })
 
     return NextResponse.json({ success: true, job: updatedJob })

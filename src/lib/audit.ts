@@ -43,6 +43,15 @@ export enum AuditAction {
     APPROVAL_APPROVE = 'APPROVAL_APPROVE',
     APPROVAL_REJECT = 'APPROVAL_REJECT',
 
+    // Cost
+    COST_CREATE = 'COST_CREATE',
+    COST_APPROVE = 'COST_APPROVE',
+    COST_REJECT = 'COST_REJECT',
+
+    // Customer Acceptance
+    JOB_CUSTOMER_ACCEPT = 'JOB_CUSTOMER_ACCEPT',
+    JOB_CUSTOMER_REJECT = 'JOB_CUSTOMER_REJECT',
+
     // System
     API_KEY_CREATE = 'API_KEY_CREATE',
     WEBHOOK_CREATE = 'WEBHOOK_CREATE'
@@ -104,6 +113,17 @@ function formatAuditMessage(action: AuditAction | string, details: AuditDetails)
 
         case AuditAction.USER_CREATE:
             return `${prefix} Yeni kullanıcı oluşturuldu: ${details.email || details.name || resourceId}`;
+
+        case AuditAction.COST_CREATE:
+            return `${prefix} Masraf oluşturuldu`.trim();
+        case AuditAction.COST_APPROVE:
+            return `${prefix} Masraf onaylandı`.trim();
+        case AuditAction.COST_REJECT:
+            return `${prefix} Masraf reddedildi`.trim();
+        case AuditAction.JOB_CUSTOMER_ACCEPT:
+            return `${prefix} İş müşteri tarafından onaylandı`.trim();
+        case AuditAction.JOB_CUSTOMER_REJECT:
+            return `${prefix} İş müşteri tarafından reddedildi`.trim();
 
         default:
             return `${prefix} ${action}`.trim();

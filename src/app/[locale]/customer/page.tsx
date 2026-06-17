@@ -202,8 +202,22 @@ export default async function CustomerDashboard(props: { params: Promise<{ local
                       <div>
                         <div className="flex items-start justify-between gap-2 mb-3">
                           <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors truncate">{job.title}</h4>
-                          <Badge variant="secondary" className="shrink-0 bg-blue-50 text-blue-700 hover:bg-blue-100 border-none">
-                            {job.status}
+                          <Badge 
+                            variant="secondary" 
+                            className={cn(
+                              "shrink-0 border-none",
+                              job.status === 'PENDING' && "bg-gray-100 text-gray-700",
+                              job.status === 'IN_PROGRESS' && "bg-yellow-100 text-yellow-700",
+                              job.status === 'COMPLETED' && "bg-indigo-100 text-indigo-700",
+                              job.status === 'ACCEPTED' && "bg-green-100 text-green-700",
+                              job.status === 'PENDING_APPROVAL' && "bg-orange-100 text-orange-700"
+                            )}
+                          >
+                            {job.status === 'PENDING' ? 'Bekliyor' :
+                             job.status === 'IN_PROGRESS' ? 'Devam Ediyor' :
+                             job.status === 'COMPLETED' ? 'Müşteri Onayı Bekliyor' :
+                             job.status === 'ACCEPTED' ? 'Kabul Edildi' :
+                             job.status === 'PENDING_APPROVAL' ? 'Yönetici Onayı Bekliyor' : job.status}
                           </Badge>
                         </div>
                         <div className="space-y-2">

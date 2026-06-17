@@ -62,4 +62,28 @@ describe('logAudit', () => {
             }),
         });
     });
+
+    it('should format new audit actions correctly', async () => {
+        const userId = 'user-1';
+        const details = { resourceName: 'Test' };
+        
+        const actions = [
+            AuditAction.COST_CREATE,
+            AuditAction.COST_APPROVE,
+            AuditAction.COST_REJECT,
+            AuditAction.JOB_CUSTOMER_ACCEPT,
+            AuditAction.JOB_CUSTOMER_REJECT,
+        ];
+
+        for (const action of actions) {
+            await logAudit(userId, action as any, details);
+            expect(prisma.systemLog.create).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        message: expect.stringContaining(action)
+                    })
+                })
+            );
+        }
+    });
 });

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
 import { z } from 'zod'
 import { sendUserNotification } from '@/lib/notification-helper'
+import { logAudit, AuditAction } from '@/lib/audit'
 
 const updateCostSchema = z.object({
     status: z.enum(['APPROVED', 'REJECTED']),
@@ -35,6 +36,14 @@ export async function PATCH(
                     select: { title: true }
                 }
             }
+        })
+
+        await logAudit(session.user.id, data.status === 'APPROVED' ? AuditAction.COST_APPROVE : AuditAction.COST_REJECT, {
+            jobId: cost.jobId,
+            resourceId: cost.id,
+            resourceName: cost.description,
+            title: cost.job.title,
+            userName: session.user.name || 'Admin'
         })
 
         // Notify the user who created the cost

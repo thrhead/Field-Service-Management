@@ -6,6 +6,7 @@ const SubStepItem = ({
     substep, 
     subIndex, 
     step, 
+    job,
     theme, 
     user, 
     t, 
@@ -24,14 +25,20 @@ const SubStepItem = ({
     const isManager = ['ADMIN', 'MANAGER'].includes(user?.role?.toUpperCase());
 
     const getStatusColor = () => {
-        if (substep.approvalStatus === 'APPROVED') return theme.colors.success || '#10B981';
+        if (substep.approvalStatus === 'APPROVED' || (job && job.status === 'ACCEPTED')) return theme.colors.success || '#10B981';
         if (substep.approvalStatus === 'REJECTED') return theme.colors.error || '#EF4444';
         return theme.colors.warning || '#F59E0B';
     };
 
     const getStatusText = () => {
-        if (substep.approvalStatus === 'APPROVED') return t('common.approved');
+        if (substep.approvalStatus === 'APPROVED' || (job && job.status === 'ACCEPTED')) return t('common.approved');
         if (substep.approvalStatus === 'REJECTED') return t('common.rejected');
+        
+        if (isCustomer && job) {
+            if (job.status === 'COMPLETED') return t('common.pendingCustomerApproval');
+            if (job.status === 'PENDING_APPROVAL') return t('common.pendingApproval');
+        }
+        
         return t('common.pendingApproval');
     };
 

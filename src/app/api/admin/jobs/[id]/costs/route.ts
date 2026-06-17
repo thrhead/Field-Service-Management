@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
 import { z } from 'zod'
+import { logAudit, AuditAction } from '@/lib/audit'
 
 const addCostSchema = z.object({
     description: z.string(),
@@ -32,7 +33,16 @@ export async function POST(
                 createdById: session.user.id,
                 status: 'APPROVED', // Admin added costs are auto-approved
                 approvedById: session.user.id
-            }
+            },
+            include: { job: true }
+        })
+
+        await logAudit(session.user.id, AuditAction.COST_CREATE, {
+            jobId: params.id,
+            resourceId: cost.id,
+            resourceName: cost.description,
+            title: cost.job.title,
+            userName: session.user.name || 'Admin'
         })
 
         return NextResponse.json({ success: true, cost })

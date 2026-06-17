@@ -28,14 +28,20 @@ const StepItem = ({
     const isManager = ['ADMIN', 'MANAGER'].includes(user?.role?.toUpperCase());
 
     const getStatusColor = () => {
-        if (step.approvalStatus === 'APPROVED') return theme.colors.success || '#10B981';
+        if (step.approvalStatus === 'APPROVED' || job.status === 'ACCEPTED') return theme.colors.success || '#10B981';
         if (step.approvalStatus === 'REJECTED') return theme.colors.error || '#EF4444';
         return theme.colors.warning || '#F59E0B';
     };
 
     const getStatusText = () => {
-        if (step.approvalStatus === 'APPROVED') return t('common.approved') || 'ONAYLANDI';
+        if (step.approvalStatus === 'APPROVED' || job.status === 'ACCEPTED') return t('common.approved') || 'ONAYLANDI';
         if (step.approvalStatus === 'REJECTED') return t('common.rejected') || 'REDDEDİLDİ';
+        
+        if (isCustomer) {
+            if (job.status === 'COMPLETED') return t('common.pendingCustomerApproval');
+            if (job.status === 'PENDING_APPROVAL') return t('common.pendingApproval');
+        }
+        
         return t('common.pendingApproval') || 'ONAY BEKLİYOR';
     };
 
