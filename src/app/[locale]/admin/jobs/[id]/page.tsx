@@ -87,6 +87,8 @@ export default async function AdminJobDetailsPage(props: {
     const pendingApproval = rawPendingApproval ? JSON.parse(JSON.stringify(rawPendingApproval)) : null
     
     // Add audit logs to job object
+    console.log('AUDIT LOGS DUMP:', JSON.stringify(auditLogs, null, 2));
+    
     const auditLogsForJob = auditLogs.filter(log => (log.meta as any)?.jobId === params.id)
     
     const jobWithLogs = {
@@ -96,7 +98,8 @@ export default async function AdminJobDetailsPage(props: {
             title: log.message,
             userName: (log.meta as any)?.userName || 'Sistem',
             date: log.createdAt,
-            type: (log.meta as any)?.action || 'SYSTEM'
+            type: (log.meta as any)?.action || 'SYSTEM',
+            meta: log.meta // Meta bilgisini bileşene aktarıyoruz ki parse edilsin
         }))
     }
 
