@@ -265,19 +265,10 @@ export function AdminJobDetailsTabs({ job, workers, teams }: AdminJobDetailsTabs
                                 <CardHeader>
                                     <CardTitle className="text-base">İş ve Müşteri Bilgileri</CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-6 text-sm">
-                                    {/* İş Bilgileri */}
-                                    <div className="space-y-2 border-b pb-4">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Kayıt ID:</span>
-                                            <span className="font-mono font-bold text-gray-700">#{job.id.slice(-6).toUpperCase()}</span>
-                                        </div>
-                                        {/* ... diğer iş bilgileri ... */}
-                                    </div>
-
-                                    {/* Müşteri Bilgileri */}
-                                    <div className="space-y-2">
-                                        <h4 className="font-semibold text-gray-900">Müşteri Bilgileri</h4>
+                                <CardContent className="space-y-2 text-sm">
+                                    {/* Müşteri Bilgileri - Kartın En Üstü */}
+                                    <div className="mb-4 pb-4 border-b">
+                                        <h4 className="font-semibold text-gray-900 mb-2">Müşteri Bilgileri</h4>
                                         <div className="flex justify-between">
                                             <span className="text-gray-500">Şirket:</span>
                                             <span className="font-medium">{job.customer?.company || '-'}</span>
@@ -286,7 +277,150 @@ export function AdminJobDetailsTabs({ job, workers, teams }: AdminJobDetailsTabs
                                             <span className="text-gray-500">İsim:</span>
                                             <span className="font-medium">{job.customer?.user?.name || '-'}</span>
                                         </div>
-                                        {/* ... diğer müşteri bilgileri ... */}
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Email:</span>
+                                            <span className="font-medium">{job.customer?.user?.email || '-'}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Telefon:</span>
+                                            <span className="font-medium">{job.customer?.user?.phone || '-'}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* İş Bilgileri */}
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Kayıt ID:</span>
+                                            <span className="font-mono font-bold text-gray-700">#{job.id.slice(-6).toUpperCase()}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Proje No:</span>
+                                            <span className="font-bold text-orange-600">{job.jobNo || '-'}</span>
+                                        </div>
+                                        <div className="space-y-1 pt-2">
+                                            <span className="text-gray-500 block">Açıklama:</span>
+                                            <div className="p-3 bg-gray-50 rounded-md border text-gray-700 whitespace-pre-wrap">
+                                                {job.description || 'Açıklama yok'}
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Durum:</span>
+                                            <span className="font-medium">{job.status}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">İş Lideri:</span>
+                                            <span className="font-bold text-amber-600">{job.jobLead?.name || 'Atanmamış'}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Başlangıç:</span>
+                                            <span className="font-medium" suppressHydrationWarning>
+                                                {job.startedAt ? new Date(job.startedAt).toLocaleString('tr-TR') : '-'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Bitiş:</span>
+                                            <span className="font-medium" suppressHydrationWarning>
+                                                {job.completedDate ? new Date(job.completedDate).toLocaleString('tr-TR') : '-'}
+                                            </span>
+                                        </div>
+
+                                        <div className="space-y-3 py-2 border-t mt-2">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Görevlendirme</span>
+                                            {job.assignments && job.assignments.length > 0 ? (
+                                                job.assignments.map((a: any) => (
+                                                    <div key={a.id} className="space-y-3">
+                                                        <div className="flex justify-between items-center text-xs">
+                                                            <span className="text-gray-500">Takım Lideri:</span>
+                                                            <span className="font-bold text-amber-600 flex items-center gap-1">
+                                                                <UserCog className="h-3 w-3" />
+                                                                {a.team?.lead?.name || 'Atanmamış'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="text-gray-500 text-xs">Çalışanlar:</span>
+                                                            <div className="flex flex-wrap gap-1 justify-end">
+                                                                {a.team?.members?.filter((m: any) => m.user.id !== a.team.lead?.id).length > 0 ? (
+                                                                    a.team.members
+                                                                        .filter((m: any) => m.user.id !== a.team.lead?.id)
+                                                                        .map((m: any, idx: number) => (
+                                                                            <Badge key={idx} variant="outline" className="text-[10px] py-0 h-5 bg-white">
+                                                                                {m.user?.name || 'İsimsiz'}
+                                                                            </Badge>
+                                                                        ))
+                                                                ) : (
+                                                                    <span className="text-[10px] text-gray-400 italic">Diğer çalışan yok</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <span className="font-medium text-xs text-gray-400 italic">Atanmamış</span>
+                                            )}
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Öncelik:</span>
+                                            <span className="font-medium">{job.priority}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Toplam Adım:</span>
+                                            <span className="font-medium">{totalSteps}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Tamamlanan:</span>
+                                            <span className="font-medium text-green-600">{completedSteps}</span>
+                                        </div>
+                                        {job.status === 'IN_PROGRESS' && job.startedAt && completedSteps > 0 && totalSteps > 0 && (
+                                            <div className="mt-4 pt-4 border-t space-y-2">
+                                                <div className="flex justify-between text-xs">
+                                                    <span className="text-gray-500">Tahmini Bitiş:</span>
+                                                    <span className="font-bold text-blue-600" suppressHydrationWarning>
+                                                        {(() => {
+                                                            try {
+                                                                const start = new Date(job.startedAt).getTime()
+                                                                const now = new Date().getTime()
+                                                                const elapsed = now - start
+                                                                const progress = completedSteps / totalSteps
+
+                                                                if (progress <= 0 || isNaN(progress)) return '-'
+
+                                                                const totalEst = elapsed / progress
+                                                                if (!isFinite(totalEst)) return '-'
+
+                                                                const finishDate = new Date(start + totalEst)
+                                                                if (isNaN(finishDate.getTime())) return '-'
+
+                                                                return finishDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+                                                            } catch (e) {
+                                                                return '-'
+                                                            }
+                                                        })()}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                                                    <div
+                                                        className="bg-blue-500 h-full transition-all duration-500"
+                                                        style={{ width: `${(completedSteps / totalSteps) * 100}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Bloklanan:</span>
+                                            <span className="font-medium text-red-600">{blockedSteps}</span>
+                                        </div>
+                                        <div className="border-t pt-2 mt-2 space-y-2">
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-500">Oluşturan:</span>
+                                                <span className="font-medium">{job.creator?.name || 'Sistem'}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-500">Oluşturulma:</span>
+                                                <span className="font-medium" suppressHydrationWarning>
+                                                    {job.createdAt ? new Date(job.createdAt).toLocaleString('tr-TR') : '-'}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>

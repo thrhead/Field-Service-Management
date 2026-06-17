@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Clock, User } from "lucide-react"
 import { Link } from "@/lib/navigation"
-// import { AdminJobDetailsTabs } from "@/components/admin/job-details-tabs"
-// import { ApprovalActionCard } from "@/components/admin/approval-action-card"
 import { getJob } from "@/lib/data/jobs"
 import { JobDialog } from "@/components/admin/job-dialog"
 import { DeleteJobButton } from "@/components/admin/delete-job-button"
@@ -28,10 +26,7 @@ export default async function AdminJobDetailsPage(props: {
         redirect("/login")
     }
 
-    // We fetch workers and teams here for the assignment dialogs that might be inside tabs
-    // Ideally these should be fetched by the components that need them or inside a data layer
-    // For now, keeping the pattern but using cleaner fetch
-    const [job, workers, teams, customers, templates] = await Promise.all([
+    const [job, workers, teams, customers, templates, auditLogs] = await Promise.all([
         getJob(params.id),
         prisma.user.findMany({
             where: { role: 'WORKER', isActive: true },
@@ -49,6 +44,13 @@ export default async function AdminJobDetailsPage(props: {
         }),
         prisma.jobTemplate.findMany({
             include: { steps: { include: { subSteps: true } } }
+        }),
+        prisma.systemLog.findMany({
+            where: { 
+                level: 'AUDIT',
+                meta: { path: ['jobId'], equals: params.id }
+            },
+            orderBy: { createdAt: 'desc' }
         })
     ])
 
@@ -84,6 +86,18 @@ export default async function AdminJobDetailsPage(props: {
     // Serialize pending approval to handle Date objects
     const rawPendingApproval = job.approvals[0]
     const pendingApproval = rawPendingApproval ? JSON.parse(JSON.stringify(rawPendingApproval)) : null
+    
+    // Add audit logs to job object
+    const jobWithLogs = {
+        ...JSON.parse(JSON.stringify(job)),
+        auditLogs: auditLogs.map(log => ({
+            id: log.id,
+            title: log.message,
+            userName: (log.meta as any)?.userName || 'Sistem',
+            date: log.createdAt,
+            type: (log.meta as any)?.action || 'SYSTEM'
+        }))
+    }
 
     return (
         <div className="space-y-6">
@@ -142,7 +156,7 @@ export default async function AdminJobDetailsPage(props: {
             </div>
 
             <JobDetailsClientWrapper
-                job={JSON.parse(JSON.stringify(job))}
+                job={jobWithLogs}
                 workers={workers}
                 teams={teams}
                 pendingApproval={pendingApproval}
