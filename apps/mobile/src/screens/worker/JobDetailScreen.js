@@ -816,17 +816,17 @@ export default function JobDetailScreen({ route, navigation }) {
                 {job && (
                     <>
                         {/* Status Alert for Approval */}
-                        {((['ADMIN', 'MANAGER'].includes(user?.role?.toUpperCase()) && job.status === 'PENDING_APPROVAL') ||
-                           (user?.role?.toUpperCase() === 'CUSTOMER' && job.status === 'COMPLETED' && job.acceptanceStatus === 'PENDING')) && (
+                        {((['ADMIN', 'MANAGER'].includes((user?.role || user?.user?.role)?.toUpperCase()) && job.status === 'PENDING_APPROVAL') ||
+                           ((user?.role || user?.user?.role)?.toUpperCase() === 'CUSTOMER' && job.status === 'COMPLETED')) && (
                             <GlassCard style={[styles.statusCard, { borderColor: theme.colors.warning }]} theme={theme}>
                                 <View style={styles.statusHeader}>
                                     <MaterialIcons name="info-outline" size={24} color={theme.colors.warning} />
                                     <Text style={[styles.statusTitle, { color: theme.colors.text }]}>
-                                        {user?.role?.toUpperCase() === 'CUSTOMER' ? t('common.pendingCustomerApproval', 'Müşteri Onayı Bekliyor') : t('common.pendingApproval')}
+                                        {(user?.role || user?.user?.role)?.toUpperCase() === 'CUSTOMER' ? t('common.pendingCustomerApproval') : t('common.pendingApproval')}
                                     </Text>
                                 </View>
                                 <Text style={[styles.statusText, { color: theme.colors.subText }]}>
-                                    {user?.role?.toUpperCase() === 'CUSTOMER' ? 'Bu montaj tamamlandı, lütfen fotoğrafları inceleyerek işi onaylayın.' : t('alerts.pendingApprovalDesc')}
+                                    {(user?.role || user?.user?.role)?.toUpperCase() === 'CUSTOMER' ? 'Bu montaj tamamlandı, lütfen fotoğrafları inceleyerek işi onaylayın.' : t('alerts.pendingApprovalDesc')}
                                 </Text>
                             </GlassCard>
                         )}

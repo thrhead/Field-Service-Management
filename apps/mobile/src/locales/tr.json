@@ -286,11 +286,11 @@
   "status": {
     "PENDING": "Beklemede",
     "IN_PROGRESS": "Devam Ediyor",
-    "COMPLETED": "Onay Bekliyor",
+    "COMPLETED": "Müşteri Onayı Bekliyor",
     "ACCEPTED": "Kabul Edildi",
     "CANCELLED": "İptal Edildi",
     "ON_HOLD": "Beklemede",
-    "PENDING_APPROVAL": "Onay Bekliyor"
+    "PENDING_APPROVAL": "Yönetici Onayı Bekliyor"
   },
   "acceptance": {
     "PENDING": "Onay Bekliyor",

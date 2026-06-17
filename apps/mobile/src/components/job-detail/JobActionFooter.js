@@ -14,7 +14,7 @@ const JobActionFooter = ({
     handleAcceptJob, 
     t 
 }) => {
-    const role = user?.role?.toUpperCase();
+    const role = (user?.role || user?.user?.role)?.toUpperCase();
     const isWorker = ['WORKER', 'TEAM_LEAD'].includes(role);
     const isAdminOrManager = ['ADMIN', 'MANAGER'].includes(role);
     const isCustomer = role === 'CUSTOMER';
@@ -60,20 +60,20 @@ const JobActionFooter = ({
                             <Text style={[
                                 styles.acceptanceStatusValue,
                                 job.status === 'ACCEPTED' ? { color: theme.colors.success } :
-                                    (job.acceptanceStatus === 'ACCEPTED' && job.status === 'COMPLETED') ? { color: theme.colors.primary } :
-                                        (job.status === 'PENDING_APPROVAL' || (job.status === 'COMPLETED' && job.acceptanceStatus === 'PENDING')) ? { color: theme.colors.warning } :
+                                    (job.status === 'COMPLETED') ? { color: theme.colors.warning } :
+                                        (job.status === 'PENDING_APPROVAL') ? { color: theme.colors.warning } :
                                             job.acceptanceStatus === 'REJECTED' ? { color: theme.colors.error } : { color: theme.colors.subText }
                             ]}>
                                 {job.status === 'ACCEPTED' ? t('acceptance.ACCEPTED') :
-                                    (job.acceptanceStatus === 'ACCEPTED' && job.status === 'COMPLETED') ? t('common.pendingCustomerApproval') :
-                                        job.acceptanceStatus === 'REJECTED' ? t('acceptance.REJECTED') :
-                                            (job.status === 'COMPLETED' || job.status === 'PENDING_APPROVAL') ? t('common.pendingApproval') : t('worker.assemblyInProgress')}
+                                    job.status === 'COMPLETED' ? t('common.pendingCustomerApproval') :
+                                        job.status === 'PENDING_APPROVAL' ? t('common.pendingApproval') :
+                                            job.acceptanceStatus === 'REJECTED' ? t('acceptance.REJECTED') : t('worker.assemblyInProgress')}
                             </Text>
                         </View>
                     )}
                     {(
-                        (isAdminOrManager && job.acceptanceStatus === 'PENDING' && (job.status === 'COMPLETED' || job.status === 'PENDING_APPROVAL')) ||
-                        (isCustomer && job.acceptanceStatus === 'PENDING' && (job.status === 'COMPLETED' || job.status === 'PENDING_APPROVAL'))
+                        (isAdminOrManager && job.status === 'PENDING_APPROVAL') ||
+                        (isCustomer && job.status === 'COMPLETED')
                     ) && (
                         <View style={{ flexDirection: 'row', gap: 12 }}>
                             <TouchableOpacity
