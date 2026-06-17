@@ -87,15 +87,34 @@ export default async function AdminJobDetailsPage(props: {
     const pendingApproval = rawPendingApproval ? JSON.parse(JSON.stringify(rawPendingApproval)) : null
     
     // Add audit logs to job object
-    console.log('--- FETCHING ALL AUDIT LOGS FOR DEBUGGING ---');
-    console.log('Total logs fetched:', auditLogs.length);
+    // Robust filtering logic: Check jobId, resourceId or any occurrence of ID in meta
+    const auditLogsForJob = auditLogs.filter(log => {
+        const meta = log.meta as any;
+        if (!meta) return false;
+
+        // 1. Direct jobId match
+        if (meta.jobId === params.id) return true;
+        
+        // 2. resourceId match (often used for job actions)
+        if (meta.resourceId === params.id) return true;
+
+        // 3. Deep search in meta (as a fallback)
+        try {
+            const metaStr = JSON.stringify(meta);
+            if (metaStr.includes(params.id)) return true;
+        } catch (e) {
+            return false;
+        }
+
+        return false;
+    });
     
     const jobWithLogs = {
         ...JSON.parse(JSON.stringify(job)),
-        auditLogs: auditLogs.map(log => ({
+        auditLogs: auditLogsForJob.map(log => ({
             id: log.id,
             title: log.message,
-            userName: (log.meta as any)?.userName || 'Sistem',
+            userName: (log.meta as any)?.userName || log.user?.name || 'Sistem',
             date: log.createdAt,
             type: (log.meta as any)?.action || 'SYSTEM',
             meta: log.meta
