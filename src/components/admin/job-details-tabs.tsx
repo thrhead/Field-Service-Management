@@ -18,6 +18,11 @@ import { JobSummaryMetrics } from '@/components/job-detail/JobSummaryMetrics'
 import { ApprovalTimeline } from '@/components/job-detail/ApprovalTimeline'
 
 // Dynamic imports to avoid SSR issues and React hydration errors
+const JobAuditHistory = dynamic(
+    () => import('@/components/admin/job-audit-history').then(mod => mod.JobAuditHistory),
+    { ssr: false, loading: () => <div className="h-full bg-gray-100 rounded-lg animate-pulse" /> }
+)
+
 const JobLocationMap = dynamic(
     () => import('@/components/map/job-location-map').then(mod => mod.JobLocationMap),
     { ssr: false, loading: () => <div className="h-[400px] bg-gray-100 rounded-lg animate-pulse" /> }
