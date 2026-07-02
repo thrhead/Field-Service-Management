@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
 import { logAudit, AuditAction } from '@/lib/audit'
+import { sendNotificationToUsers } from '@/lib/notification-helper'
 
 export async function POST(
   req: Request,
@@ -35,6 +36,10 @@ export async function POST(
       where: {
         id,
         customerId: customer.id
+      },
+      include: {
+        creator: true,
+        assignments: { include: { team: { include: { members: true } } } }
       }
     })
 
@@ -46,6 +51,8 @@ export async function POST(
       return NextResponse.json({ error: 'Only completed jobs can be rejected' }, { status: 400 })
     }
 
+    const rejectionMsg = reason || notes;
+
     // Start transaction
     const updatedJob = await prisma.$transaction(async (tx) => {
       // Revert job status to IN_PROGRESS or a special REJECTED status
@@ -54,7 +61,7 @@ export async function POST(
         data: {
           status: 'IN_PROGRESS', // Back to progress so workers can fix issues
           acceptanceStatus: 'REJECTED',
-          rejectionReason: reason || notes
+          rejectionReason: rejectionMsg
         }
       })
 
@@ -66,7 +73,7 @@ export async function POST(
           approverId: session.user.id,
           status: 'REJECTED',
           type: 'CUSTOMER_FINAL_APPROVAL',
-          notes: notes || reason || 'Müşteri tarafından reddedildi.'
+          notes: rejectionMsg
         }
       })
 
@@ -77,8 +84,30 @@ export async function POST(
       jobId: id,
       title: job.title,
       userName: session.user.name || 'Müşteri',
-      rejectionReason: reason || notes
+      rejectionReason: rejectionMsg
     })
+
+    // Send notifications to workers, job lead, creator, and admins
+    const admins = await prisma.user.findMany({
+      where: { role: { in: ['ADMIN', 'MANAGER', 'TEAM_LEAD'] }, isActive: true },
+      select: { id: true }
+    });
+    
+    const recipientIds = new Set(admins.map(a => a.id));
+    recipientIds.add(job.creatorId);
+    if (job.jobLeadId) recipientIds.add(job.jobLeadId);
+    job.assignments.forEach(a => {
+        if (a.workerId) recipientIds.add(a.workerId);
+        a.team?.members?.forEach(m => recipientIds.add(m.userId));
+    });
+
+    await sendNotificationToUsers(
+        Array.from(recipientIds),
+        'İş Reddedildi ❌',
+        `"${job.title}" işi müşteri tarafından reddedilmiştir. (Sebep: ${rejectionMsg})`,
+        'ERROR',
+        `/admin/jobs/${id}`
+    );
 
     return NextResponse.json({ success: true, job: updatedJob })
   } catch (error) {

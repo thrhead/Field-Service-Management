@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
 import { logAudit, AuditAction } from '@/lib/audit'
+import { sendNotificationToUsers } from '@/lib/notification-helper'
 
 export async function POST(
   req: Request,
@@ -31,6 +32,10 @@ export async function POST(
       where: {
         id,
         customerId: customer.id
+      },
+      include: {
+        creator: true,
+        assignments: { include: { team: { include: { members: true } } } }
       }
     })
 
@@ -74,6 +79,28 @@ export async function POST(
       title: job.title,
       userName: session.user.name || 'Müşteri'
     })
+
+    // Send notifications to workers, job lead, creator, and admins
+    const admins = await prisma.user.findMany({
+      where: { role: { in: ['ADMIN', 'MANAGER', 'TEAM_LEAD'] }, isActive: true },
+      select: { id: true }
+    });
+    
+    const recipientIds = new Set(admins.map(a => a.id));
+    recipientIds.add(job.creatorId);
+    if (job.jobLeadId) recipientIds.add(job.jobLeadId);
+    job.assignments.forEach(a => {
+        if (a.workerId) recipientIds.add(a.workerId);
+        a.team?.members?.forEach(m => recipientIds.add(m.userId));
+    });
+
+    await sendNotificationToUsers(
+        Array.from(recipientIds),
+        'İş Onaylandı ✅',
+        `"${job.title}" işi müşteri tarafından onaylanmıştır.`,
+        'SUCCESS',
+        `/admin/jobs/${id}`
+    );
 
     return NextResponse.json({ success: true, job: updatedJob })
   } catch (error) {
