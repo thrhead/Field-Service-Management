@@ -125,7 +125,7 @@ export async function POST(
     }
 
     if (updatedStep.isCompleted && !step.isCompleted && subSteps.length === 0) {
-        const { sendAdminNotification } = await import('@/lib/notification-helper')
+        const { sendAdminNotification, sendNotificationToUsers } = await import('@/lib/notification-helper')
         const { broadcast } = await import('@/lib/ably')
 
         await broadcast('step:completed', {
@@ -142,6 +142,22 @@ export async function POST(
             'SUCCESS',
             `/admin/jobs/${step.jobId}`
         );
+
+        // Fetch customer and notify
+        const jobWithCustomer = await prisma.job.findUnique({
+            where: { id: step.jobId },
+            include: { customer: { include: { user: true } } }
+        });
+
+        if (jobWithCustomer?.customer?.userId) {
+            await sendNotificationToUsers(
+                [jobWithCustomer.customer.userId],
+                'İş Adımı Tamamlandı',
+                `"${step.job.title}" işindeki "${step.title}" adımı tamamlanmıştır.`,
+                'INFO',
+                `/customer/jobs/${step.jobId}`
+            );
+        }
     }
 
     // Detailed Audit Logging

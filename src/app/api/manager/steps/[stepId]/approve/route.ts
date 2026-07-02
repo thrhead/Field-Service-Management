@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
 import { logAudit, AuditAction } from '@/lib/audit'
+import { sendNotificationToUsers, sendJobNotification } from '@/lib/notification-helper'
 
 export async function POST(
     req: Request,
@@ -16,7 +17,7 @@ export async function POST(
 
         const step = await prisma.jobStep.findUnique({
             where: { id: params.stepId },
-            include: { job: true }
+            include: { job: { include: { customer: { include: { user: true } } } } }
         })
 
         if (!step) {
@@ -48,13 +49,23 @@ export async function POST(
 
         // Notify the worker who completed the step
         if (step.completedById) {
-            const { sendJobNotification } = await import('@/lib/notification-helper');
             await sendJobNotification(
                 step.jobId,
                 'İş Adımı Onaylandı ✅',
                 `"${step.job.title}" işindeki "${step.title}" adımı onaylandı.`,
                 'SUCCESS',
                 `/worker/jobs/${step.jobId}`
+            );
+        }
+
+        // Notify customer
+        if (step.job.customer?.userId) {
+            await sendNotificationToUsers(
+                [step.job.customer.userId],
+                'İş Adımı Onaylandı ✅',
+                `"${step.job.title}" işindeki "${step.title}" adımı onaylanmıştır.`,
+                'INFO',
+                `/customer/jobs/${step.jobId}`
             );
         }
 
