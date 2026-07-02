@@ -49,7 +49,8 @@ const FILTER_OPTIONS = [
   { value: 'all', label: 'Tümü' },
   { value: 'pending', label: 'Bekleyen' },
   { value: 'in_progress', label: 'Devam Eden' },
-  { value: 'completed', label: 'Tamamlanan' }
+  { value: 'completed', label: 'Tamamlanan' },
+  { value: 'accepted', label: 'Kabul Edilen' }
 ]
 
 export default function CustomerJobsPage() {

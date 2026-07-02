@@ -34,6 +34,7 @@ const STATUS_OPTIONS = [
     { value: 'IN_PROGRESS', label: 'Devam Eden' },
     { value: 'COMPLETED', label: 'Tamamlanan' },
     { value: 'CANCELLED', label: 'İptal' },
+    { value: 'ACCEPTED', label: 'Kabul Edilen' },
 ]
 
 export function AdvancedFilter({ teams }: AdvancedFilterProps) {
