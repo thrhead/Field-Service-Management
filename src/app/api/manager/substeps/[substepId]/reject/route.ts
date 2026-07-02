@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { verifyAuth } from '@/lib/auth-helper';
 import { sendJobNotification } from '@/lib/notification-helper';
 import { z } from 'zod';
+import { logAudit, AuditAction } from '@/lib/audit';
 
 const rejectSchema = z.object({
     reason: z.string().min(1, "Red sebebi gereklidir"),
@@ -39,6 +40,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ sub
                 }
             }
         });
+
+        // Audit Logging
+        try {
+            await logAudit(session.user.id, 'SUBSTEP_REJECT', {
+                jobId: substep.step.jobId,
+                resourceId: substep.id,
+                resourceName: substep.title,
+                title: substep.step.job?.title || '',
+                userName: session.user.name || 'Yönetici',
+                rejectionReason: reason
+            });
+        } catch (auditErr) {
+            console.error('[Manager Substep Rejection Logging] Failed to write audit log:', auditErr);
+        }
 
         await sendJobNotification(
             substep.step.jobId,

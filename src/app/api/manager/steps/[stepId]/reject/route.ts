@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
+import { logAudit, AuditAction } from '@/lib/audit'
 
 export async function POST(
     req: Request,
@@ -50,6 +51,20 @@ export async function POST(
                 }
             }
         })
+
+        // Audit Logging
+        try {
+            await logAudit(session.user.id, 'STEP_REJECT', {
+                jobId: step.jobId,
+                resourceId: step.id,
+                resourceName: step.title,
+                title: step.job?.title || '',
+                userName: session.user.name || 'Yönetici',
+                rejectionReason: reason
+            });
+        } catch (auditErr) {
+            console.error('[Manager Step Rejection Logging] Failed to write audit log:', auditErr);
+        }
 
         // Explicitly update job status to IN_PROGRESS if it was COMPLETED
         // This ensures the job reappears in the active list

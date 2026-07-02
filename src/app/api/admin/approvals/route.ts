@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuth } from '@/lib/auth-helper';
 import { sendUserNotification, sendJobNotification } from '@/lib/notification-helper';
+import { logAudit, AuditAction } from '@/lib/audit';
 
 export async function POST(req: Request) {
   try {
@@ -38,6 +39,20 @@ export async function POST(req: Request) {
           }
         });
 
+        // Audit Logging
+        try {
+          await logAudit(userId, isApprove ? AuditAction.COST_APPROVE : AuditAction.COST_REJECT, {
+            jobId: cost.jobId,
+            resourceId: cost.id,
+            resourceName: cost.description || 'Masraf',
+            title: cost.job?.title || '',
+            userName: session?.user?.name || 'Yönetici',
+            rejectionReason: !isApprove ? reason : undefined
+          });
+        } catch (auditErr) {
+          console.error('[Admin Cost Approval Logging] Failed to write audit log:', auditErr);
+        }
+
         // Notify the creator of the cost
         if (cost.createdById && cost.createdById !== userId) {
           await sendUserNotification(
@@ -71,6 +86,20 @@ export async function POST(req: Request) {
           }
         });
 
+        // Audit Logging
+        try {
+          await logAudit(userId, isApprove ? 'STEP_APPROVE' : 'STEP_REJECT', {
+            jobId: step.jobId,
+            resourceId: step.id,
+            resourceName: step.title,
+            title: step.job?.title || '',
+            userName: session?.user?.name || 'Yönetici',
+            rejectionReason: !isApprove ? reason : undefined
+          });
+        } catch (auditErr) {
+          console.error('[Admin Step Approval Logging] Failed to write audit log:', auditErr);
+        }
+
         await sendJobNotification(
             step.jobId,
             isApprove ? 'İş Adımı Onaylandı ✅' : 'İş Adımı Reddedildi ❌',
@@ -102,6 +131,20 @@ export async function POST(req: Request) {
             }
           }
         });
+
+        // Audit Logging
+        try {
+          await logAudit(userId, isApprove ? 'SUBSTEP_APPROVE' : 'SUBSTEP_REJECT', {
+            jobId: subStep.step.jobId,
+            resourceId: subStep.id,
+            resourceName: subStep.title,
+            title: subStep.step.job?.title || '',
+            userName: session?.user?.name || 'Yönetici',
+            rejectionReason: !isApprove ? reason : undefined
+          });
+        } catch (auditErr) {
+          console.error('[Admin Substep Approval Logging] Failed to write audit log:', auditErr);
+        }
 
         await sendJobNotification(
             subStep.step.jobId,

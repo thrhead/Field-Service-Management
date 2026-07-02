@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
 import { z } from 'zod'
 import { notifyApprovalApproved, notifyApprovalRejected, notifyAdminsOfApprovalResult } from '@/lib/notifications'
+import { logAudit, AuditAction } from '@/lib/audit'
 
 const updateApprovalSchema = z.object({
   status: z.enum(['APPROVED', 'REJECTED']),
@@ -51,6 +52,20 @@ export async function PATCH(
         updatedAt: new Date()
       }
     })
+
+    // Audit Logging
+    try {
+      await logAudit(session.user.id, status === 'APPROVED' ? AuditAction.APPROVAL_APPROVE : AuditAction.APPROVAL_REJECT, {
+        jobId: approval.jobId,
+        resourceId: approval.id,
+        resourceName: approval.type === 'JOB_COMPLETION' ? 'İş Tamamlama Onayı' : approval.type,
+        title: approval.job?.title || '',
+        userName: session.user.name || 'Yönetici',
+        notes: notes || undefined
+      });
+    } catch (auditErr) {
+      console.error('[Job Approval Logging] Failed to write audit log:', auditErr);
+    }
 
     // Update job status based on approval decision
     if (status === 'APPROVED') {

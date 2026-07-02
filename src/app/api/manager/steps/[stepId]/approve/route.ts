@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-helper'
+import { logAudit, AuditAction } from '@/lib/audit'
 
 export async function POST(
     req: Request,
@@ -31,6 +32,19 @@ export async function POST(
                 rejectionReason: null
             }
         })
+
+        // Audit Logging
+        try {
+            await logAudit(session.user.id, 'STEP_APPROVE', {
+                jobId: step.jobId,
+                resourceId: step.id,
+                resourceName: step.title,
+                title: step.job?.title || '',
+                userName: session.user.name || 'Yönetici'
+            });
+        } catch (auditErr) {
+            console.error('[Manager Step Approval Logging] Failed to write audit log:', auditErr);
+        }
 
         // Notify the worker who completed the step
         if (step.completedById) {

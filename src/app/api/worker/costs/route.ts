@@ -4,6 +4,7 @@ import { verifyAuth } from '@/lib/auth-helper'
 import { z } from 'zod'
 import { uploadToCloudinary } from '@/lib/cloudinary'
 import { sendNotificationToUsers } from '@/lib/notification-helper'
+import { logAudit, AuditAction } from '@/lib/audit'
 
 const createCostSchema = z.object({
     jobId: z.string().min(1),
@@ -98,6 +99,21 @@ export async function POST(req: Request) {
                 createdBy: true
             }
         });
+
+        // Audit Logging
+        try {
+            await logAudit(session.user.id, AuditAction.COST_CREATE, {
+                jobId: data.jobId,
+                resourceId: cost.id,
+                resourceName: cost.description || data.category || 'Masraf',
+                title: job.title,
+                userName: session.user.name || 'Çalışan',
+                amount: cost.amount,
+                currency: cost.currency
+            })
+        } catch (auditErr) {
+            console.error('[Cost Logging] Failed to write audit log:', auditErr);
+        }
 
         // Run post-processing synchronously to ensure it completes in serverless environments
         try {
