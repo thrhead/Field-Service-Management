@@ -61,10 +61,26 @@ export function JobAuditHistory({ logs }: JobAuditHistoryProps) {
     const filteredLogs = useMemo(() => {
         if (filter === 'ALL') return logs
         return logs.filter(log => {
-            const action = log.type || log.meta?.action || '';
-            if (filter === 'COSTS') return action.includes('COST')
-            if (filter === 'APPROVALS') return action.includes('APPROVAL') || action.includes('CUSTOMER') || action.includes('APPROVE') || action.includes('REJECT')
-            if (filter === 'STATUS') return action.includes('JOB_STATUS') || action.includes('JOB_STARTED') || action.includes('JOB_COMPLETED') || action.includes('JOB_STEP_COMPLETE') || action.includes('JOB_SUBSTEP_COMPLETE') || action.includes('JOB_CREATE')
+            const action = (log.type || log.meta?.action || log.message || '').toUpperCase();
+            
+            if (filter === 'COSTS') {
+                return action.includes('COST');
+            }
+            if (filter === 'APPROVALS') {
+                return action.includes('APPROVAL') || 
+                       action.includes('CUSTOMER') || 
+                       action.includes('APPROVE') || 
+                       action.includes('REJECT') ||
+                       (action.includes('COST') && (action.includes('APPROVE') || action.includes('REJECT')));
+            }
+            if (filter === 'STATUS') {
+                return action.includes('JOB_STATUS') || 
+                       action.includes('JOB_STARTED') || 
+                       action.includes('JOB_COMPLETED') || 
+                       action.includes('JOB_STEP_COMPLETE') || 
+                       action.includes('JOB_SUBSTEP_COMPLETE') || 
+                       action.includes('JOB_CREATE');
+            }
             return true
         })
     }, [logs, filter])
