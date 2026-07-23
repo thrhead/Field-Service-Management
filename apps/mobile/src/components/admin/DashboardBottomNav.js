@@ -1,19 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Animated } from 'react-native';
-import { LayoutGrid, Users, Plus, ListTodo, UserCircle } from 'lucide-react-native';
+import { LayoutGrid, Users, Plus, ListTodo, UserCircle, Banknote, Bell, Calendar } from 'lucide-react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 const DashboardBottomNav = ({ navigation, activeTab = 'Dashboard' }) => {
     const { theme, isDark } = useTheme();
     const { t } = useTranslation();
+    const { user } = useAuth();
     const [focusedTab, setFocusedTab] = useState(null);
+
+    const role = user?.role?.toUpperCase() || 'WORKER';
 
     // Scale animation refs for each item
     const animatedValues = {
         Dashboard: useRef(new Animated.Value(activeTab === 'Dashboard' ? 1.2 : 1)).current,
         TeamManagement: useRef(new Animated.Value(activeTab === 'TeamManagement' ? 1.2 : 1)).current,
         Jobs: useRef(new Animated.Value(activeTab === 'Jobs' ? 1.2 : 1)).current,
+        Expense: useRef(new Animated.Value(activeTab === 'Expense' || activeTab === 'ExpenseManagement' ? 1.2 : 1)).current,
+        Notifications: useRef(new Animated.Value(activeTab === 'Notifications' ? 1.2 : 1)).current,
+        Calendar: useRef(new Animated.Value(activeTab === 'Calendar' ? 1.2 : 1)).current,
         Profile: useRef(new Animated.Value(activeTab === 'Profile' ? 1.2 : 1)).current,
     };
 
@@ -21,7 +28,7 @@ const DashboardBottomNav = ({ navigation, activeTab = 'Dashboard' }) => {
         // Animate the active tab scale
         Object.keys(animatedValues).forEach(tab => {
             Animated.spring(animatedValues[tab], {
-                toValue: activeTab === tab ? 1.2 : 1,
+                toValue: (activeTab === tab || (tab === 'Expense' && activeTab === 'ExpenseManagement')) ? 1.2 : 1,
                 useNativeDriver: true,
                 friction: 8,
                 tension: 40
@@ -29,13 +36,62 @@ const DashboardBottomNav = ({ navigation, activeTab = 'Dashboard' }) => {
         });
     }, [activeTab]);
 
-    const navItems = [
-        { id: 'Dashboard', title: t('navigation.home'), icon: LayoutGrid, route: 'AdminDashboard' },
-        { id: 'TeamManagement', title: t('navigation.teams'), icon: Users, route: 'TeamManagement' },
-        { id: 'QuickAdd', title: '', icon: Plus, route: 'CreateJob', isCenter: true },
-        { id: 'Jobs', title: t('navigation.jobs'), icon: ListTodo, route: 'Jobs' },
-        { id: 'Profile', title: t('navigation.profile'), icon: UserCircle, route: 'Profile' },
-    ];
+    const getDashboardRoute = () => {
+        switch (role) {
+            case 'ADMIN': return 'AdminDashboard';
+            case 'MANAGER': return 'ManagerDashboard';
+            case 'CUSTOMER': return 'CustomerDashboard';
+            case 'WORKER':
+            case 'TEAM_LEAD':
+            default:
+                return 'WorkerDashboard';
+        }
+    };
+
+    const getNavItems = () => {
+        const homeRoute = getDashboardRoute();
+
+        if (role === 'ADMIN') {
+            return [
+                { id: 'Dashboard', title: t('navigation.home'), icon: LayoutGrid, route: homeRoute },
+                { id: 'TeamManagement', title: t('navigation.teams'), icon: Users, route: 'TeamManagement' },
+                { id: 'QuickAdd', title: '', icon: Plus, route: 'CreateJob', isCenter: true },
+                { id: 'Jobs', title: t('navigation.jobs'), icon: ListTodo, route: 'Jobs' },
+                { id: 'Profile', title: t('navigation.profile'), icon: UserCircle, route: 'Profile' },
+            ];
+        }
+
+        if (role === 'MANAGER') {
+            return [
+                { id: 'Dashboard', title: t('navigation.home'), icon: LayoutGrid, route: homeRoute },
+                { id: 'TeamManagement', title: t('navigation.teams'), icon: Users, route: 'TeamList' },
+                { id: 'QuickAdd', title: '', icon: Plus, route: 'CreateJob', isCenter: true },
+                { id: 'Jobs', title: t('navigation.jobs'), icon: ListTodo, route: 'Jobs' },
+                { id: 'Profile', title: t('navigation.profile'), icon: UserCircle, route: 'Profile' },
+            ];
+        }
+
+        if (role === 'CUSTOMER') {
+            return [
+                { id: 'Dashboard', title: t('navigation.home'), icon: LayoutGrid, route: homeRoute },
+                { id: 'Jobs', title: t('navigation.jobs'), icon: ListTodo, route: 'Jobs' },
+                { id: 'NotificationsCenter', title: '', icon: Bell, route: 'Notifications', isCenter: true },
+                { id: 'Calendar', title: t('navigation.calendar') || 'Takvim', icon: Calendar, route: 'Calendar' },
+                { id: 'Profile', title: t('navigation.profile'), icon: UserCircle, route: 'Profile' },
+            ];
+        }
+
+        // WORKER / TEAM_LEAD / Default
+        return [
+            { id: 'Dashboard', title: t('navigation.home'), icon: LayoutGrid, route: homeRoute },
+            { id: 'Jobs', title: t('navigation.jobs'), icon: ListTodo, route: 'Jobs' },
+            { id: 'QuickExpense', title: '', icon: Banknote, route: 'ExpenseManagement', isCenter: true },
+            { id: 'Notifications', title: t('navigation.notifications') || 'Bildirimler', icon: Bell, route: 'Notifications' },
+            { id: 'Profile', title: t('navigation.profile'), icon: UserCircle, route: 'Profile' },
+        ];
+    };
+
+    const navItems = getNavItems();
 
     return (
         <View style={[

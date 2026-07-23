@@ -9,6 +9,7 @@ import GlassCard from '../../components/ui/GlassCard';
 import StatCard from '../../components/StatCard';
 import { useManagerDashboardStats } from '../../hooks/useManagerDashboardStats';
 import { useAlert } from '../../context/AlertContext';
+import DashboardBottomNav from '../../components/admin/DashboardBottomNav';
 
 export default function ManagerDashboardScreen({ navigation }) {
     const { user, logout } = useAuth();
@@ -228,6 +229,7 @@ export default function ManagerDashboardScreen({ navigation }) {
                     </View>
                 </View>
             </ScrollView>
+            <DashboardBottomNav navigation={navigation} activeTab="Dashboard" />
         </LinearGradient>
     );
 }

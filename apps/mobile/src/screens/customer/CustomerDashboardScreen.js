@@ -21,6 +21,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { PieChart } from 'react-native-gifted-charts';
 import { LinearGradient } from 'expo-linear-gradient';
+import DashboardBottomNav from '../../components/admin/DashboardBottomNav';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -245,6 +246,7 @@ export default function CustomerDashboardScreen({ navigation }) {
                 )}
 
             </ScrollView>
+            <DashboardBottomNav navigation={navigation} activeTab="Dashboard" />
         </SafeAreaView>
     );
 }

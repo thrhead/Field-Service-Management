@@ -30,6 +30,7 @@ import { useAlert } from '../../context/AlertContext';
 import LoadingOverlay from '../../components/common/LoadingOverlay';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
 import { TrendingUp, PieChart as PieIcon } from 'lucide-react-native';
+import DashboardBottomNav from '../../components/admin/DashboardBottomNav';
 
 import CustomSpinner from '../../components/CustomSpinner';
 if (Platform.OS === 'android') {
@@ -470,6 +471,7 @@ export default function WorkerDashboardScreen({ navigation }) {
                     visible={loading && !refreshing} 
                     theme={theme}
                 />
+                <DashboardBottomNav navigation={navigation} activeTab="Dashboard" />
             </SafeAreaView>
         </LinearGradient>
     );

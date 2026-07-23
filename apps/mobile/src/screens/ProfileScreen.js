@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAlert } from '../context/AlertContext';
+import DashboardBottomNav from '../components/admin/DashboardBottomNav';
 import authService from '../services/auth.service';
 import notificationService from '../services/notification.service';
 import RoleBadge from '../components/RoleBadge';
@@ -117,10 +118,11 @@ export default function ProfileScreen({ navigation }) {
     };
 
     return (
-        <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={[{ backgroundColor: theme.colors.background, flexGrow: 1, paddingBottom: 40 }]}
-        >
+        <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={[{ backgroundColor: theme.colors.background, flexGrow: 1, paddingBottom: 40 }]}
+            >
             {/* User Info Section */}
             <View style={styles.section}>
                 <GlassCard style={styles.profileHeader} theme={theme}>
@@ -241,9 +243,10 @@ export default function ProfileScreen({ navigation }) {
                 </TouchableOpacity>
             </View>
 
-            <View style={{ height: 40 }} />
+            <View style={{ height: 80 }} />
         </ScrollView>
-    );
+        <DashboardBottomNav navigation={navigation} activeTab="Profile" />
+    </View>
 }
 
 const styles = StyleSheet.create({
