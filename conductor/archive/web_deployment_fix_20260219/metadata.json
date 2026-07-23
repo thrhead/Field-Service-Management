@@ -1,8 +1,0 @@
-{
-  "track_id": "web_deployment_fix_20260219",
-  "type": "bug",
-  "status": "completed",
-  "created_at": "2026-02-19T05:47:00Z",
-  "updated_at": "2026-02-19T05:47:00Z",
-  "description": "Web app deployment failure after monorepo transition (Server Component render error and font preloading issues on Vercel)."
-}
