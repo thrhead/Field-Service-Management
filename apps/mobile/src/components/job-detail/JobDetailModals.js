@@ -39,6 +39,7 @@ const AppModal = ({ visible, children, transparent = true, animationType = 'fade
 const JobDetailModals = ({
     theme,
     t,
+    user,
     jobId,
     modalVisible,
     setModalVisible,
@@ -68,6 +69,9 @@ const JobDetailModals = ({
     signatureModalVisible,
     handleSaveSignature
 }) => {
+    const userRole = (user?.role || user?.user?.role)?.toUpperCase();
+    const isCustomer = userRole === 'CUSTOMER';
+
     return (
         <>
             {/* Image Preview Modal */}
@@ -86,7 +90,7 @@ const JobDetailModals = ({
                     )}
 
                     <View style={styles.modalFooter}>
-                        {selectedImage?.id && (
+                        {selectedImage?.id && !isCustomer && (
                             <TouchableOpacity
                                 style={[styles.deleteButton, { backgroundColor: theme.colors.error }]}
                                 onPress={() => handleDeletePhoto(selectedImage)}

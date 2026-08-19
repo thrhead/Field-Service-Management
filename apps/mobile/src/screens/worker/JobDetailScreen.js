@@ -977,6 +977,7 @@ export default function JobDetailScreen({ route, navigation }) {
             <JobDetailModals 
                 theme={theme}
                 t={t}
+                user={user}
                 jobId={jobId}
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}

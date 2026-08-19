@@ -98,8 +98,9 @@ export async function GET(req: Request) {
       pendingJobs: jobs.filter(j => j.status === 'PENDING').length,
       inProgressJobs: jobs.filter(j => j.status === 'IN_PROGRESS').length,
       completedJobs: jobs.filter(j => j.status === 'COMPLETED').length,
+      acceptedJobs: jobs.filter(j => j.status === 'ACCEPTED').length,
       completionRate: jobs.length > 0 
-        ? Math.round((jobs.filter(j => j.status === 'COMPLETED').length / jobs.length) * 100)
+        ? Math.round((jobs.filter(j => j.status === 'COMPLETED' || j.status === 'ACCEPTED').length / jobs.length) * 100)
         : 0
     }
 

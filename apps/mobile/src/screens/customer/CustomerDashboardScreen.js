@@ -57,6 +57,7 @@ export default function CustomerDashboardScreen({ navigation }) {
         pendingJobs: 0,
         inProgressJobs: 0,
         completedJobs: 0,
+        acceptedJobs: 0,
         completionRate: 0
     });
     
@@ -106,9 +107,10 @@ export default function CustomerDashboardScreen({ navigation }) {
     const recentCompleted = jobs.filter(j => j.status === 'COMPLETED' || j.status === 'ACCEPTED').slice(0, 3);
 
     const pieData = [
-        { value: stats.pendingJobs || 0, color: theme.colors.tertiary, text: stats.pendingJobs.toString() },
-        { value: stats.inProgressJobs || 0, color: theme.colors.warning, text: stats.inProgressJobs.toString() },
-        { value: stats.completedJobs || 0, color: theme.colors.success, text: stats.completedJobs.toString() }
+        { value: stats.pendingJobs || 0, color: theme.colors.tertiary, text: (stats.pendingJobs || 0).toString() },
+        { value: stats.inProgressJobs || 0, color: theme.colors.primary, text: (stats.inProgressJobs || 0).toString() },
+        { value: stats.completedJobs || 0, color: '#f97316', text: (stats.completedJobs || 0).toString() },
+        { value: stats.acceptedJobs || 0, color: theme.colors.success, text: (stats.acceptedJobs || 0).toString() }
     ];
 
     const hasNoData = pieData.every(item => item.value === 0);
@@ -158,8 +160,8 @@ export default function CustomerDashboardScreen({ navigation }) {
                 >
                     <View style={styles.heroContent}>
                         <View style={styles.heroStats}>
-                            <Text style={styles.heroLabel}>{t('jobs.status.COMPLETED', 'Tamamlanan')} / {t('jobs.total', 'Toplam İş')}</Text>
-                            <Text style={styles.heroValue}>{stats.completedJobs} / {stats.totalJobs}</Text>
+                            <Text style={styles.heroLabel}>{t('jobs.status.COMPLETED', 'Tamamlanan')} + {t('status.ACCEPTED', 'Kabul Edilen')} / {t('jobs.total', 'Toplam')}</Text>
+                            <Text style={styles.heroValue}>{stats.completedJobs + stats.acceptedJobs} / {stats.totalJobs}</Text>
                         </View>
                         
                         <View style={styles.chartContainer}>
@@ -171,7 +173,7 @@ export default function CustomerDashboardScreen({ navigation }) {
                                     textColor="white"
                                     radius={40}
                                     innerRadius={25}
-                                    textSize={12}
+                                    textSize={10}
                                     backgroundColor="transparent"
                                 />
                             ) : (
@@ -188,12 +190,16 @@ export default function CustomerDashboardScreen({ navigation }) {
                             <Text style={styles.legendText}>{t('jobs.status.PENDING', 'Bekliyor')}</Text>
                         </View>
                         <View style={styles.legendItem}>
-                            <View style={[styles.legendDot, { backgroundColor: theme.colors.warning }]} />
+                            <View style={[styles.legendDot, { backgroundColor: theme.colors.primary }]} />
                             <Text style={styles.legendText}>{t('jobs.status.IN_PROGRESS', 'Devam Ediyor')}</Text>
                         </View>
                         <View style={styles.legendItem}>
-                            <View style={[styles.legendDot, { backgroundColor: theme.colors.success }]} />
+                            <View style={[styles.legendDot, { backgroundColor: '#f97316' }]} />
                             <Text style={styles.legendText}>{t('jobs.status.COMPLETED', 'Tamamlandı')}</Text>
+                        </View>
+                        <View style={styles.legendItem}>
+                            <View style={[styles.legendDot, { backgroundColor: theme.colors.success }]} />
+                            <Text style={styles.legendText}>{t('status.ACCEPTED', 'Kabul Edildi')}</Text>
                         </View>
                     </View>
                 </LinearGradient>
@@ -201,19 +207,27 @@ export default function CustomerDashboardScreen({ navigation }) {
                 {/* Action Buttons */}
                 <View style={styles.actionRow}>
                     <GlassCard theme={theme} style={styles.actionCard} onPress={() => navigation.navigate('Jobs', { filter: 'IN_PROGRESS' })}>
-                        <View style={[styles.actionIcon, { backgroundColor: theme.colors.warning + '20' }]}>
-                            <MaterialIcons name="sync" size={24} color={theme.colors.warning} />
+                        <View style={[styles.actionIcon, { backgroundColor: theme.colors.primary + '20' }]}>
+                            <MaterialIcons name="sync" size={24} color={theme.colors.primary} />
                         </View>
                         <Text style={[styles.actionText, { color: theme.colors.text }]}>{t('jobs.status.IN_PROGRESS', 'Devam Ediyor')}</Text>
-                        <Text style={[styles.actionBadge, { color: theme.colors.subText }]}>{stats.inProgressJobs}</Text>
+                        <Text style={[styles.actionBadge, { color: theme.colors.primary }]}>{stats.inProgressJobs}</Text>
                     </GlassCard>
 
                     <GlassCard theme={theme} style={styles.actionCard} onPress={() => navigation.navigate('Jobs', { filter: 'COMPLETED' })}>
-                        <View style={[styles.actionIcon, { backgroundColor: theme.colors.success + '20' }]}>
-                            <MaterialIcons name="check-circle" size={24} color={theme.colors.success} />
+                        <View style={[styles.actionIcon, { backgroundColor: '#f97316' + '20' }]}>
+                            <MaterialIcons name="check-circle" size={24} color="#f97316" />
                         </View>
                         <Text style={[styles.actionText, { color: theme.colors.text }]}>{t('jobs.status.COMPLETED', 'Tamamlandı')}</Text>
-                        <Text style={[styles.actionBadge, { color: theme.colors.subText }]}>{stats.completedJobs}</Text>
+                        <Text style={[styles.actionBadge, { color: '#f97316' }]}>{stats.completedJobs}</Text>
+                    </GlassCard>
+
+                    <GlassCard theme={theme} style={styles.actionCard} onPress={() => navigation.navigate('Jobs', { filter: 'ACCEPTED' })}>
+                        <View style={[styles.actionIcon, { backgroundColor: theme.colors.success + '20' }]}>
+                            <MaterialIcons name="verified" size={24} color={theme.colors.success} />
+                        </View>
+                        <Text style={[styles.actionText, { color: theme.colors.text }]}>{t('status.ACCEPTED', 'Kabul Edildi')}</Text>
+                        <Text style={[styles.actionBadge, { color: theme.colors.success }]}>{stats.acceptedJobs}</Text>
                     </GlassCard>
                 </View>
 
