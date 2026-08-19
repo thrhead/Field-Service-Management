@@ -67,10 +67,11 @@ const JobDetailModals = ({
     setCostModalVisible,
     createExpense,
     signatureModalVisible,
-    handleSaveSignature
+    handleSaveSignature,
+    isCustomer: isCustomerProp
 }) => {
     const userRole = (user?.role || user?.user?.role)?.toUpperCase();
-    const isCustomer = userRole === 'CUSTOMER';
+    const isCustomer = isCustomerProp !== undefined ? isCustomerProp : (userRole === 'CUSTOMER');
 
     return (
         <>

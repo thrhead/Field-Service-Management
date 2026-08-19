@@ -47,6 +47,13 @@ const GlassCard = ({ children, style, onPress, theme }) => (
     </TouchableOpacity>
 );
 
+const STATUS_COLORS = {
+    PENDING: '#F59E0B',      // Amber/Yellow
+    IN_PROGRESS: '#3B82F6',  // Blue
+    COMPLETED: '#F97316',    // Orange
+    ACCEPTED: '#10B981'      // Emerald Green
+};
+
 export default function CustomerDashboardScreen({ navigation }) {
     const { user } = useAuth();
     const { theme } = useTheme();
@@ -107,10 +114,10 @@ export default function CustomerDashboardScreen({ navigation }) {
     const recentCompleted = jobs.filter(j => j.status === 'COMPLETED' || j.status === 'ACCEPTED').slice(0, 3);
 
     const pieData = [
-        { value: stats.pendingJobs || 0, color: theme.colors.tertiary, text: (stats.pendingJobs || 0).toString() },
-        { value: stats.inProgressJobs || 0, color: theme.colors.primary, text: (stats.inProgressJobs || 0).toString() },
-        { value: stats.completedJobs || 0, color: '#f97316', text: (stats.completedJobs || 0).toString() },
-        { value: stats.acceptedJobs || 0, color: theme.colors.success, text: (stats.acceptedJobs || 0).toString() }
+        { value: stats.pendingJobs || 0, color: STATUS_COLORS.PENDING, text: (stats.pendingJobs || 0).toString() },
+        { value: stats.inProgressJobs || 0, color: STATUS_COLORS.IN_PROGRESS, text: (stats.inProgressJobs || 0).toString() },
+        { value: stats.completedJobs || 0, color: STATUS_COLORS.COMPLETED, text: (stats.completedJobs || 0).toString() },
+        { value: stats.acceptedJobs || 0, color: STATUS_COLORS.ACCEPTED, text: (stats.acceptedJobs || 0).toString() }
     ];
 
     const hasNoData = pieData.every(item => item.value === 0);
@@ -186,19 +193,19 @@ export default function CustomerDashboardScreen({ navigation }) {
                     
                     <View style={styles.heroFooter}>
                         <View style={styles.legendItem}>
-                            <View style={[styles.legendDot, { backgroundColor: theme.colors.tertiary }]} />
+                            <View style={[styles.legendDot, { backgroundColor: STATUS_COLORS.PENDING }]} />
                             <Text style={styles.legendText}>{t('jobs.status.PENDING', 'Bekliyor')}</Text>
                         </View>
                         <View style={styles.legendItem}>
-                            <View style={[styles.legendDot, { backgroundColor: theme.colors.primary }]} />
+                            <View style={[styles.legendDot, { backgroundColor: STATUS_COLORS.IN_PROGRESS }]} />
                             <Text style={styles.legendText}>{t('jobs.status.IN_PROGRESS', 'Devam Ediyor')}</Text>
                         </View>
                         <View style={styles.legendItem}>
-                            <View style={[styles.legendDot, { backgroundColor: '#f97316' }]} />
+                            <View style={[styles.legendDot, { backgroundColor: STATUS_COLORS.COMPLETED }]} />
                             <Text style={styles.legendText}>{t('jobs.status.COMPLETED', 'Tamamlandı')}</Text>
                         </View>
                         <View style={styles.legendItem}>
-                            <View style={[styles.legendDot, { backgroundColor: theme.colors.success }]} />
+                            <View style={[styles.legendDot, { backgroundColor: STATUS_COLORS.ACCEPTED }]} />
                             <Text style={styles.legendText}>{t('status.ACCEPTED', 'Kabul Edildi')}</Text>
                         </View>
                     </View>
@@ -207,27 +214,27 @@ export default function CustomerDashboardScreen({ navigation }) {
                 {/* Action Buttons */}
                 <View style={styles.actionRow}>
                     <GlassCard theme={theme} style={styles.actionCard} onPress={() => navigation.navigate('Jobs', { filter: 'IN_PROGRESS' })}>
-                        <View style={[styles.actionIcon, { backgroundColor: theme.colors.primary + '20' }]}>
-                            <MaterialIcons name="sync" size={24} color={theme.colors.primary} />
+                        <View style={[styles.actionIcon, { backgroundColor: STATUS_COLORS.IN_PROGRESS + '20' }]}>
+                            <MaterialIcons name="sync" size={24} color={STATUS_COLORS.IN_PROGRESS} />
                         </View>
                         <Text style={[styles.actionText, { color: theme.colors.text }]}>{t('jobs.status.IN_PROGRESS', 'Devam Ediyor')}</Text>
-                        <Text style={[styles.actionBadge, { color: theme.colors.primary }]}>{stats.inProgressJobs}</Text>
+                        <Text style={[styles.actionBadge, { color: STATUS_COLORS.IN_PROGRESS }]}>{stats.inProgressJobs}</Text>
                     </GlassCard>
 
                     <GlassCard theme={theme} style={styles.actionCard} onPress={() => navigation.navigate('Jobs', { filter: 'COMPLETED' })}>
-                        <View style={[styles.actionIcon, { backgroundColor: '#f97316' + '20' }]}>
-                            <MaterialIcons name="check-circle" size={24} color="#f97316" />
+                        <View style={[styles.actionIcon, { backgroundColor: STATUS_COLORS.COMPLETED + '20' }]}>
+                            <MaterialIcons name="check-circle" size={24} color={STATUS_COLORS.COMPLETED} />
                         </View>
                         <Text style={[styles.actionText, { color: theme.colors.text }]}>{t('jobs.status.COMPLETED', 'Tamamlandı')}</Text>
-                        <Text style={[styles.actionBadge, { color: '#f97316' }]}>{stats.completedJobs}</Text>
+                        <Text style={[styles.actionBadge, { color: STATUS_COLORS.COMPLETED }]}>{stats.completedJobs}</Text>
                     </GlassCard>
 
                     <GlassCard theme={theme} style={styles.actionCard} onPress={() => navigation.navigate('Jobs', { filter: 'ACCEPTED' })}>
-                        <View style={[styles.actionIcon, { backgroundColor: theme.colors.success + '20' }]}>
-                            <MaterialIcons name="verified" size={24} color={theme.colors.success} />
+                        <View style={[styles.actionIcon, { backgroundColor: STATUS_COLORS.ACCEPTED + '20' }]}>
+                            <MaterialIcons name="verified" size={24} color={STATUS_COLORS.ACCEPTED} />
                         </View>
                         <Text style={[styles.actionText, { color: theme.colors.text }]}>{t('status.ACCEPTED', 'Kabul Edildi')}</Text>
-                        <Text style={[styles.actionBadge, { color: theme.colors.success }]}>{stats.acceptedJobs}</Text>
+                        <Text style={[styles.actionBadge, { color: STATUS_COLORS.ACCEPTED }]}>{stats.acceptedJobs}</Text>
                     </GlassCard>
                 </View>
 

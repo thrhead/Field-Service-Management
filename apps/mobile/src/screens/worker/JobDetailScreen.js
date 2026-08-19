@@ -55,6 +55,12 @@ export default function JobDetailScreen({ route, navigation }) {
     const { showAlert } = useAlert();
     const { socket, joinJobRoom, leaveJobRoom } = useSocket();
 
+    const userRole = user?.role?.toUpperCase() || user?.user?.role?.toUpperCase();
+    const isCustomer = userRole === 'CUSTOMER' || 
+                     route.params?.isCustomer === true || 
+                     route.params?.role === 'CUSTOMER' ||
+                     route.params?.role?.toUpperCase() === 'CUSTOMER';
+
     // State
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -86,13 +92,6 @@ export default function JobDetailScreen({ route, navigation }) {
 
         try {
             setLoading(true);
-            
-            const userRole = user?.role?.toUpperCase() || user?.user?.role?.toUpperCase();
-            const isCustomer = userRole === 'CUSTOMER' || 
-                             route.params?.isCustomer === true || 
-                             route.params?.role === 'CUSTOMER' ||
-                             route.params?.role?.toUpperCase() === 'CUSTOMER';
-            
             LoggerService.info(`[JobDetailScreen] Loading job ${jobId}`, { 
                 role: userRole, 
                 isCustomer, 
@@ -978,6 +977,7 @@ export default function JobDetailScreen({ route, navigation }) {
                 theme={theme}
                 t={t}
                 user={user}
+                isCustomer={isCustomer}
                 jobId={jobId}
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
