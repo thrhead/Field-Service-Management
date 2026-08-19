@@ -247,6 +247,7 @@ export default function ProfileScreen({ navigation }) {
         </ScrollView>
         <DashboardBottomNav navigation={navigation} activeTab="Profile" />
     </View>
+    );
 }
 
 const styles = StyleSheet.create({
